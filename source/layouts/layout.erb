@@ -11,7 +11,7 @@
     <%= stylesheet_link_tag "bootstrap.min" %>
     <%= stylesheet_link_tag "javascript.fullPage" %>
 
-    <link href="https://fonts.googleapis.com/css?family=Anton" rel="stylesheet"> 
+     <link href="https://fonts.googleapis.com/css?family=Poiret+One" rel="stylesheet"> > 
     <%= stylesheet_link_tag "style" %>
     <link rel="shortcut icon" href="/images/favicon.jpg" type="image/ico"/>
 
@@ -24,7 +24,7 @@
     <%= javascript_include_tag "custom" %>
 
   </head>
-  <body data-spy="scroll" data-offset="50" data-target=".navbar-collapse">
+  <body>
     <!-- start navigation -->
     <!-- <div class="navbar navbar-fixed-top navbar-default" role="navigation">
       <div class="container">
@@ -49,14 +49,10 @@
     </div> -->
     <!-- end navigation -->
     <%= yield %>
-
-<!--<footer>
-      
-    </footer> -->
     
     <script type="text/javascript">
       fullpage.initialize('#fullpage', {
-        anchors: ['firstPage', 'secondPage', '3rdPage', '4thpage', 'lastPage'],
+        anchors: ['home', 'expertSolution', 'raisonDetre', '4thpage', 'lastPage'],
         menu: '#menu',
         navigation:true,
         continuousVertical:true,

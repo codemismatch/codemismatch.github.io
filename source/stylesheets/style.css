@@ -48,13 +48,13 @@ abbr,acronym { border: 0;
     font-family: Intro;
     src: url(../fonts/Intro.otf);
 }
-p{font-family: Avenir-Light;}
-.avenir-light{font-family: Avenir-Light;}
+p{font-family: 'Poiret One', cursive, sans-serif;}
+/*.avenir-light{font-family: Avenir-Light;}*/
 .intro{font-family: Intro;}
 .uppercase{text-transform: uppercase;};
 .font90px{font-size: 90px;}
 .width80{width: 80%;padding: 0 13%;}
-
+.width100{width: 100%;padding: 0 13%;}
 .footer .copyright{ color: #aaa;padding: 15px 0;}
 .nav .menubar{font-size:30px;cursor:pointer;}
 .navbar.footer{z-index: 10;}
@@ -62,7 +62,8 @@ li.menubar a:hover { background: transparent;}
 /* Custom CSS
  * --------------------------------------- */
 body{
-  font-family: 'Avenir-Light', sans-serif;
+  /*font-family: 'Avenir-Light', sans-serif;*/
+  font-family: 'Poiret One', cursive, sans-serif;
   color: #F2F2F2;
 }
 h1{
@@ -156,7 +157,6 @@ p{
     font-size: 60px;
 }
 
-
 /* Section 1
  * --------------------------------------- */
 #home{
@@ -165,26 +165,28 @@ p{
 #home h1.first_line{
   margin-top: 20px;
   color: #505050 ;
-  line-height: 60px;
+  line-height: 90px;
+  z-index: 100;
+
 }
 #home h1.second_line{
   color: #115883;
-  line-height: 70px;
+  line-height: 60px;
+  font-size: 4.9em;
 }
 #home p{
-  /*opacity: 0.4;*/
+  z-index: 100;
   font-size: 22px;
   color: #8E8E8E;
-  line-height: 30px;
+  line-height: 25px;
   margin-top: 20px;
 }
 p strong{color: #444;}
 #home .content{top: 40%;}
-#home h1.intro{}
-#home h1.avenir-light{}
+
 /* Section 2
  * --------------------------------------- */
-#services .content{width: 90%;padding: 0 13%;}
+#services .content{width: 100%;padding: 0 13%;}
 #services{
   background-color: #ffffff;
 }
@@ -198,7 +200,7 @@ p strong{color: #444;}
 #services #slide1 h3 {
   text-align: left;
   /*margin-left: 65px;*/
-  font-size: 5.5em;
+  font-size: 4.9em;
   line-height: 60px;
   color: #115883;
 }
@@ -206,6 +208,7 @@ p strong{color: #444;}
     font-size: 550px;
     position: absolute;
     z-index: -1;
+    top: -20%;
 }
 #services #slide1 p{
   /*opacity: 0.8;*/
@@ -225,7 +228,7 @@ p strong{color: #444;}
 #services #slide2 h3 {
   text-align: left;
   /*margin-left: 65px;*/
-  font-size: 5.5em;
+  font-size: 4.9em;
   line-height: 60px;
   color: #115883;
 }
@@ -259,6 +262,43 @@ p strong{color: #444;}
   filter: none; /* IE6-9 */
   filter: grayscale(0); /* W3C */
 }
+#services #slide2 p{
+  /*opacity: 0.8;*/
+  color: #8E8E8E;
+  font-size: 20px;
+  text-align: center;
+}
+
+#services .content{width: 100%;padding: 0 13%;}
+#services{
+  background-color: #ffffff;
+}
+#services #slide3 h1 {
+  color: #3C3C3C;
+  /*margin: 0 0 0 60px;*/
+  padding-top: 40px;
+  font-size: 80px;
+  text-transform: uppercase;
+}
+#services #slide3 h3 {
+  text-align: left;
+  /*margin-left: 65px;*/
+  font-size: 4.9em;
+  line-height: 60px;
+  color: #115883;
+}
+#services #slide3 .fa.fa-clock-o {
+    font-size: 550px;
+    position: absolute;
+    z-index: -1;
+}
+#services #slide3 p{
+  /*opacity: 0.8;*/
+  color: #8E8E8E;
+  font-size: 20px;
+}
+#services #slide3 p.first_pre{margin-top: 100px;}
+
 /* Section 3
  * --------------------------------------- */
 #reason .content{width: 90%;padding: 0 13%;}
@@ -274,8 +314,8 @@ p strong{color: #444;}
 #reason h3 {
     text-align: left;
     /*margin-left: 65px;*/
-    font-size: 6em;
-    line-height: 20px;
+    font-size: 4.9em;
+    line-height: 40px;
     color: #115883
 
 }
@@ -284,12 +324,14 @@ p strong{color: #444;}
   color: #8E8E8E;
   font-size: 20px;
 }
-#reason  .fa.fa-question {
+#reason .fa.fa-question {
     font-size: 550px;
     position: absolute;
     z-index: -1;
+    top: -20%;
 }
 #reason p.first_pre{margin-top: 100px;}
+#reason .motto { margin-top: 20px;}
 /* Contact
  * --------------------------------------- */
 #contact .content {
@@ -303,15 +345,15 @@ p strong{color: #444;}
 }
 .address {
     position: absolute;
-    width: 440px;
+    width: 400px;
     color: #fff;
     z-index: 100;
     background: #a7a4a4;
-    top: 180px;
+    top: 150px;
     left: 50px;
     padding: 15px;
 }
-.address p{font-size: 20px;}
+.address p{font-size: 16px;}
 .address li {
     display: flex;
     margin-bottom: 10px;
@@ -321,8 +363,10 @@ p strong{color: #444;}
     margin-right: 20px;
 }
 .address  input.form-control{opacity: 0.8; margin-bottom: 10px; border-radius: 0;}
-.address textarea{opacity: 0.8; margin-bottom: 10px; border-radius: 0;}
+.address textarea{opacity: 0.8; margin-bottom: 10px; border-radius: 0; height: 100px;}
 .address input[type = "submit"]{background: #115883;color: #fff;font-weight: 600;border:none; }
+.fp-controlArrow.fp-prev{z-index: 100;}
+.fp-controlArrow.fp-next{z-index: 100;}
 /* When the height of the screen is less than 450 pixels, change the font-size of the links and position the close button again, so they don't overlap */
 @media screen and (max-height: 450px) {
   .overlay {overflow-y: auto;}
@@ -332,4 +376,64 @@ p strong{color: #444;}
     top: 15px;
     right: 35px;
   }
+}
+@media only screen and (max-width: 480px) {
+  /*Navigation*/
+  #menu .navbar-header {float: left;}
+  #menu ul.nav.navbar-nav.navbar-right { float: right;}
+
+  /*Home*/
+  #home h1.first_line{font-size: 30px;line-height: 10px;margin-top: 0;}
+  #home h1.second_line{font-size: 40px;}
+  #home p{font-size: 18px;margin-top: 0px;}
+  #home .content {top: 40%;}
+  #home .content .width100 { padding: 0 5%;}
+
+  /*service*/
+  #services #slide1 .content {padding: 0 5%;}
+  #services #slide1 h1{font-size: 30px;}
+  #services #slide1 h3{font-size: 22px;line-height: 30px;}
+  #services #slide1 p.first_pre { margin-top: 30px;font-size: 18px;}
+  #services #slide1 .fa.fa-lightbulb-o { font-size: 460px;top: -30%;}
+
+  /*Stack*/
+  #services #slide2 .content {padding: 0 5%;}
+  #services #slide2 h1{font-size: 30px;}
+  #services #slide2 h3{font-size: 28px;line-height: 30px;}
+  #services #slide2 p {font-size: 18px;}
+  #services #slide2 .fa.fa-flask{ font-size: 370px;top: -10%;}
+  #services #slide2 .stack { margin-top: 10px;}
+  #services #slide2 h4 { font-family: Intro; font-size: 15px; margin-top: 20px;}
+  #services #slide2 .media-object img { width: 55px;}
+
+   /*speed*/
+  #services #slide3 .content {padding: 0 5%;}
+  #services #slide3 h1{font-size: 30px;}
+  #services #slide3 h3{font-size: 28px;line-height: 30px;}
+  #services #slide3 p.first_pre { margin-top: 30px;}
+  #services #slide3 p{font-size: 18px;}
+  #services #slide3 .fa.fa-clock-o { font-size: 380px; top: -10%;}
+
+  /*Reason*/
+  #reason .content { width: 100%; padding: 0 5%;}
+  #reason .fa.fa-question {font-size: 500px;top: -30%;}
+  #reason h1.avenir-light{font-size: 30px;margin-top: 0;line-height: 40px;}
+  #reason h3.intro{font-size: 40px;}
+  #reason p.first_pre { margin-top: 40px;}
+  #reason p{font-size: 18px;}
+
+  /*Contact*/
+  #contact .content{height: auto; padding: 0 5%;}
+  #contact .address{position: unset; width: 100%;}
+  #contact .google_map{display: none;width: 100%;}
+  #contact h1 { display: none;}
+  #contact .address p { font-size: 15px;}
+  #contact #message { height: 50px;}
+
+  /*Buttons*/
+  .slide-buttons{right: 15px;}
+
+  .fp-controlArrow.fp-next { bottom: 5%; right: 40%;}
+  .fp-controlArrow.fp-prev { bottom: 5%; left: 40%;}
+  .slide-buttons a{font-size: 14px!important;}
 }

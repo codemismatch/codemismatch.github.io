@@ -65,7 +65,7 @@ html.fp-enabled,
 .fp-controlArrow {
     position: absolute;
     z-index: 4;
-    top: 48%;
+    bottom: 9%;
     cursor: pointer;
     width: 0;
     height: 0;
@@ -73,14 +73,14 @@ html.fp-enabled,
     margin-top: -38px;
 }
 .fp-controlArrow.fp-prev {
-    right: 55px;
+    left: 48.5%;
     width: 0;
     border-width: 18.5px 14px 18.5px 0;
     border-color: transparent #337ab7 transparent transparent;
 }
 .fp-controlArrow.fp-next {
-    top: 58%;
-    right: 55px;
+    bottom: 9%;
+    right: 48.5%;
     border-width: 18.5px 0 18.5px 14px;
     border-color: transparent transparent transparent #337ab7;
 }
