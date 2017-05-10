@@ -44,6 +44,7 @@ configure :build do
   activate :minify_css
   activate :minify_javascript
   activate :minify_html
+  set :haml, { :format => :html5 }
 end
 
 activate :deploy do |deploy|
