@@ -167,6 +167,7 @@ p{
   color: #505050 ;
   line-height: 90px;
   z-index: 100;
+  opacity: 0.5;
 
 }
 #home h1.second_line{
@@ -198,6 +199,7 @@ p strong{color: #444; font-weight: 1000;}
   padding-top: 40px;
   font-size: 80px;
   text-transform: uppercase;
+  opacity: 0.5;
 }
 #services #slide1 h3 {
   text-align: left;
@@ -226,6 +228,7 @@ p strong{color: #444; font-weight: 1000;}
   padding-top: 40px;
   font-size: 80px;
   text-transform: uppercase;
+  opacity: 0.5;
 }
 #services #slide2 h3 {
   text-align: left;
@@ -281,6 +284,7 @@ p strong{color: #444; font-weight: 1000;}
   padding-top: 40px;
   font-size: 80px;
   text-transform: uppercase;
+  opacity: 0.5;
 }
 #services #slide3 h3 {
   text-align: left;
@@ -312,6 +316,7 @@ p strong{color: #444; font-weight: 1000;}
     /*margin: 0 0 0 60px;*/
     padding-top: 40px;
     font-size: 120px;
+    opacity: 0.5;
 }
 #reason h3 {
     text-align: left;
