@@ -176,12 +176,14 @@ p{
 }
 #home p{
   z-index: 100;
-  font-size: 20px;
+  font-size: 19px;
   color: #8E8E8E;
   line-height: 25px;
   margin-top: 20px;
+  font-weight: lighter;
+  font-family: 'Poiret One', cursive, sans-serif;
 }
-p strong{color: #444;}
+p strong{color: #444; font-weight: 1000;;}}
 #home .content{top: 40%;}
 
 /* Section 2
