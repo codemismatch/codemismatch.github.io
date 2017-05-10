@@ -21,7 +21,7 @@ strong{
 }
 ol,ul {
     list-style: none;
-    margin:0;
+g    margin:0;
     padding:0;
 }
 caption,th {
@@ -183,7 +183,7 @@ p{
   font-weight: lighter;
   font-family: 'Poiret One', cursive, sans-serif;
 }
-p strong{color: #444; font-weight: 1000;;}}
+p strong{color: #444; font-weight: 1000;}
 #home .content{top: 40%;}
 
 /* Section 2
