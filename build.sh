@@ -11,9 +11,9 @@ cd build/
 echo "Initialising Git ..."
 git init
 git remote add origin "https://github.com/codemismatch/codemismatch.github.io.git"
-echo "Fetch --- "
-git fetch --depth 0
+echo "Initialising an orphan branch"
 git checkout --orphan master
+echo "Adding Files"
 git add .
 echo "Automated Commit .."
 git commit -m "Automated commit by build script $(date)"
