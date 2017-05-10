@@ -1,0 +1,26 @@
+#contact.section
+  .content
+    %h1.text-center Contact
+    .google_map
+      #map-canvas
+    .address
+      %ul
+        %li
+          %i.fa.fa-map-marker{"aria-hidden" => "true"}
+          %p A-203 Sakal 24, Near Savita green party plot, behind shreenath bunglows, Chandkheda, Ahmedabad, Gujarat, India
+        %li
+          %i.fa.fa-phone{"aria-hidden" => "true"}
+          %p +917990233778
+        %li
+          %i.fa.fa-envelope-o{"aria-hidden" => "true"}
+          %p business@codemismatch.com
+      .row.contact_form
+        %form#contact-form.col-md-12.col-sm-12{:action => "http://formspree.io/codemismatch@gmail.com", :method => "post", :role => "form"}
+          .col-md-12.col-sm-12.wow.fadeIn{"data-wow-delay" => "0.3s"}
+            %input#name.form-control{:name => "name", :placeholder => "Name", :type => "text"}/
+          .col-md-12.col-sm-12.wow.fadeIn{"data-wow-delay" => "0.3s"}
+            %input#email.form-control{:name => "email", :placeholder => "Email", :type => "email"}/
+          .col-md-12.col-sm-12.wow.fadeIn{"data-wow-delay" => "0.9s"}
+            %textarea#message.form-control{:name => "message", :placeholder => "Message", :rows => "5"}
+          .col-md-12.col-sm-12.wow.fadeIn{"data-wow-delay" => "0.3s"}
+            %input#submit.form-control{:name => "submit", :type => "submit", :value => "Send"}/

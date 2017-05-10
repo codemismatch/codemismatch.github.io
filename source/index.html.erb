@@ -9,66 +9,16 @@ title: Codemismatch - Invent | Ideate | Innovate
     <a href="#" class="slide_down" id="moveSectionDown"><i class="fa fa-angle-down"></i></a>
   </div>
   <div id="fullpage">
-    <%= partial "layouts/_home" %>
+    <%= partial "pages/_home" %>
    <div class="section" id="services">
-     <%= partial "layouts/_slide1" %>
-     <%= partial "layouts/_slide2" %>
-     <%= partial "layouts/_slide3" %>
-              </div>
-    <div class="section" id="reason">
-      <div class="content">
-        <i class="fa fa-question" aria-hidden="true"></i>
-        <h1 class="avenir-light">Raison d'être</h1>
-        <h3 class="intro">reason to be</h3>
-        <p class="first_pre">Codemismatch is a boutique webshop. We started with the goal to fill the gap in high quality, affordable, offshore software development. </p>
-        <p class="motto"><mark> Our Motto :  Invent | Ideate | Innovate  </mark></p>
-      </div>
+     <%= partial "pages/_slide1" %>
+     <%= partial "pages/_slide2" %>
+     <%= partial "pages/_slide3" %>
     </div>
-    <div class="section" id="contact">
-      <div class="content">
-        <h1 class="text-center">Contact</h1>
-        <div class="google_map">
-          <div id="map-canvas"></div> 
-        </div>
-        <div class="address">
-          <ul>
-            <li><i class="fa fa-map-marker" aria-hidden="true"></i><p>A-203 Sakal 24, Near Savita green party plot, behind shreenath bunglows, Chandkheda, Ahmedabad, Gujarat, India</p></li>
-            <li><i class="fa fa-phone" aria-hidden="true"></i><p>+917990233778</p></li>
-            <li><i class="fa fa-envelope-o" aria-hidden="true"></i><p>business@codemismatch.com</p></li>
-          </ul>
-          <div class=" row contact_form">
-            <form action="http://formspree.io/codemismatch@gmail.com" method="post" class="col-md-12 col-sm-12" id="contact-form" role="form">
-              <div class="col-md-12 col-sm-12 wow fadeIn" data-wow-delay="0.3s">
-                <input name="name" type="text" class="form-control" id="name" placeholder="Name">
-              </div>
-              <div class="col-md-12 col-sm-12 wow fadeIn" data-wow-delay="0.3s">
-                <input name="email" type="email" class="form-control" id="email" placeholder="Email">
-              </div>
-              <div class="col-md-12 col-sm-12 wow fadeIn" data-wow-delay="0.9s">
-                <textarea name="message" rows="5" class="form-control" id="message" placeholder="Message"></textarea>
-              </div>
-              <div class="col-md-12 col-sm-12 wow fadeIn" data-wow-delay="0.3s">
-                <input name="submit" type="submit" class="form-control" id="submit" value="Send">
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
+    <%= partial "pages/_reason" %>
+    <%= partial "pages/_contact" %>
   </div>
-  <div class="navbar navbar-fixed-bottom footer" role="navigation">
-    <div class="container-fluid">
-      <div class="collapse navbar-collapse">
-        <ul class="nav navbar-nav navbar">
-          <li class="copyright">Copyright © 2016 Codemismatch</li>
-          <li><a href="#" ><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
-          <li><a href="#"><i class="fa fa-google-plus" aria-hidden="true"></i></a> </li>
-          <li><a href="#" ><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>
-          <li><a href="http://medium.com/@codemismatch" target="_blank" class="smoothScroll"><i class="fa fa-medium" aria-hidden="true"></i></a></li>
-        </ul>
-      </div>
-    </div>
-  </div>
+  <%= partial "layouts/_footer" %>
 </div>
 
 <script>
