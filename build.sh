@@ -16,5 +16,5 @@ git fetch --depth 0
 git checkout --orphan master
 git add .
 echo "Automated Commit .."
-git commit -m "Automated Deploy commit by build script $(date)"
+git commit -m "Automated commit by build script $(date)"
 git push origin master --force
