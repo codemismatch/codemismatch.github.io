@@ -18,25 +18,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <script src="https://use.fontawesome.com/e44c37d594.js"></script>
-    <%= javascript_include_tag "bootstrap.min" %>
-    <%= javascript_include_tag "javascript.fullPage.min" %>
-    <%= javascript_include_tag "sine-waves.min" %>
-    <%= javascript_include_tag "custom" %>
-
   </head>
   <body>
-
     <%= yield %>
-    
-    <script type="text/javascript">
-      fullpage.initialize('#fullpage', {
-        anchors: ['home', 'expertSolution', 'raisonDetre', '4thpage', 'lastPage'],
-        menu: '#menu',
-        navigation:true,
-        continuousVertical:true,
-        css3:true
-      });
-
-    </script>
+    <%= javascript_include_tag "javascript.fullPage.min.js" %>
+    <%= javascript_include_tag "sine-waves.min" %>
+    <%= javascript_include_tag "custom" %>
   </body>
 </html>
