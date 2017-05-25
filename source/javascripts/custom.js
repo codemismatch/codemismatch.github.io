@@ -113,7 +113,7 @@ function calculateCenter() {
 function loadGoogleMap(){
     var script = document.createElement('script');
     script.type = 'text/javascript';
-    script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyBJ40C4iIdDPBwef5SRLVEG0AfqP1XVTa8&' + 'callback=initialize';
+    script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyBYVdRh1p5eUTPDkF6sUBQBbqzsVLp0MHY&' + 'callback=initialize';
     document.body.appendChild(script);
 }
 $(function(){
