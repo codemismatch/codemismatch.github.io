@@ -7,6 +7,8 @@ echo "Middleman Build ..."
 middleman build
 echo "Copy CNAME to build/ ..."
 cp CNAME build/
+echo "Copy Google Site Verification page ..."
+cp source/pages/google* build/
 cd build/
 echo "Initialising Git ..."
 git init
