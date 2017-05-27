@@ -116,10 +116,6 @@ function loadGoogleMap(){
     script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyCj6FN4dtYP-OUAZK-f0LOsvGPaNBWUI5o&' + 'callback=initialize;';
     document.body.appendChild(script);
 }
-$(function(){
-  loadGoogleMap();
-});
-
 
 $(document).ready(function() {
   $('#moveSectionUp').click(function(e){
@@ -130,6 +126,10 @@ $(document).ready(function() {
   $('#moveSectionDown').click(function(e){
     e.preventDefault();
     fullpage.moveSectionDown();
+  });
+
+  $(function(){
+    loadGoogleMap();
   });
 
   fullpage.initialize('#fullpage', {
