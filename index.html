@@ -1,0 +1,288 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="description" content="Test driven development ">
+    <meta name="keywords" content="Ruy on rails, Golang, Nodejs, Javascript, Customize Software Development, Software Development, Web Application Development">
+    <meta name="author" content="Pankaj Doharey">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="canonical" href="https://codemismatch.com" />
+
+    <script type="text/javascript">
+      //Redirect Users to to https
+      var host = "codemismatch.com";
+      if ((host == window.location.host) && (window.location.protocol != "https:"))
+      window.location.protocol = "https";
+    </script>
+
+
+    <title>Codemismatch - Invent | Ideate | Innovate</title>
+
+    <link href="/stylesheets/animate.min.css" rel="stylesheet" />
+    <link href="/stylesheets/bootstrap.min.css" rel="stylesheet" />
+    <link href="/stylesheets/javascript.fullPage.css" rel="stylesheet" />
+
+    <link href="https://fonts.googleapis.com/css?family=Poiret+One|Raleway" rel="stylesheet">
+    <link href="/stylesheets/style.css" rel="stylesheet" />
+    <link rel="shortcut icon" href="images/mismatch.ico" type="image/ico"/>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="https://use.fontawesome.com/e44c37d594.js"></script>
+  </head>
+  <body>
+    <div id="superContainer" >
+   <nav class='transperent' id='menu' role='navigation'>
+<div class='navbar navbar-fixed-top' role='navigation'>
+<div class='container-fluid'>
+<div class='navbar-header'>
+<!--
+<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+<span class="sr-only">Toggle navigation</span>
+<span class="icon-bar"></span>
+<span class="icon-bar"></span>
+<span class="icon-bar"></span>
+</button>
+-->
+<a class='navbar-brand logo' href='/'>
+<img src='images/logo.png'>
+</a>
+</div>
+<ul class='nav navbar-nav navbar-right'>
+<li class='menubar'>
+<a href='#'>
+<span onclick='openNav()'>☰</span>
+</a>
+</li>
+<div class='overlay' id='myNav'>
+<a class='closebtn' href='javascript:void(0)' onclick='closeNav()'>×</a>
+<div class='overlay-content'>
+<a href='#'>About</a>
+<a href='#'>Services</a>
+<a href='#'>Clients</a>
+<a href='#'>Contact</a>
+</div>
+</div>
+</ul>
+</div>
+</div>
+</nav>
+
+ <div class="slide-buttons">
+    <a href="#" class="slide_up" id="moveSectionUp"><i class="fa fa-angle-up"></i></a>
+    <a href="#" class="slide_down" id="moveSectionDown"><i class="fa fa-angle-down"></i></a>
+  </div>
+  <div id="fullpage">
+    <div class='section' id='home'>
+<div class='content'>
+<div class='sin_wave'>
+<canvas id='waves'></canvas>
+</div>
+<div class='width100'>
+<h1 class='avenir-light uppercase first_line'>code</h1>
+<h1 class='intro second_line'>symphony</h1>
+<p>
+We look at software as a symphony of many individual units of decision, we can help you make those decisions
+efficient and informed.
+Which is why testing is of paramount importance to us, our practices include
+<strong>Test driven development</strong>
+and
+<strong>Pair programming.</strong>
+We generally agree to Most of what Sandi Metz has to say in
+<a href='http://poodr.com' target='_blank'>
+<strong>POODR</strong>
+</a>,
+</p>
+</div>
+</div>
+</div>
+
+   <div class="section" id="services">
+     <div class='slide' id='slide1'>
+<div class='content'>
+<i aria-hidden='true' class='fa fa-lightbulb-o'></i>
+<h1 class='avenir-light'>Hire a remote team</h1>
+<h3 class='intro'>Experienced Developers</h3>
+<p>
+Hire your very own remote team or as an offshore extension to your existing team.
+Our team has experience delivering well tested code guided by best practices in record time.
+Because we understand that time is the true essence in business.
+</p>
+</div>
+</div>
+
+     <div class='slide' id='slide2'>
+<div class='content'>
+<i aria-hidden='true' class='fa fa-flask'></i>
+<h1 class='avenir-light'>STACKS</h1>
+<h3 class='intro'>WE USE</h3>
+<div class='row stack'>
+<div class='col-md-3 col-sm-4 col-xs-6'>
+<div class='media'>
+<div class='media-object wow fadeIn' data-wow-delay='0.1s'>
+<img alt='Ruby on rails' class='img-responsive lang' src='images/rails.png'>
+</div>
+<div class='media-body wow fadeIn'>
+<h4 class='media-heading'>
+Ruby on rails
+</h4>
+</div>
+</div>
+</div>
+<div class='col-md-3 col-sm-4 col-xs-6'>
+<div class='media'>
+<div class='media-object wow fadeIn' data-wow-delay='0.3s'>
+<img alt='Javascript' class='img-responsive lang' src='images/js1.png'>
+</div>
+<div class='media-body wow fadeIn'>
+<h4 class='media-heading'>Javascript</h4>
+</div>
+</div>
+</div>
+<div class='col-md-3 col-sm-4 col-xs-6'>
+<div class='media'>
+<div class='media-object wow fadeIn' data-wow-delay='0.6s'>
+<img alt='Go' class='img-responsive lang' src='images/golang.png'>
+</div>
+<div class='media-body wow fadeIn' data-wow-delay='0.3s'>
+<h4 class='media-heading'>
+Go
+</h4>
+</div>
+</div>
+</div>
+<div class='col-md-3 col-sm-4 col-xs-6'>
+<div class='media'>
+<div class='media-object wow fadeIn' data-wow-delay='0.9s'>
+<img alt='Clojure' class='img-responsive lang' src='images/clojure.png'>
+</div>
+<div class='media-body wow fadeIn' data-wow-delay='0.6s'>
+<h4 class='media-heading'>
+Clojure
+</h4>
+</div>
+</div>
+</div>
+</div>
+<div>
+<p>At Codemismatch we understand the strength and weaknesses of our tech stack.</p>
+</div>
+</div>
+</div>
+
+     <div class='slide' id='slide3'>
+<div class='content'>
+<i aria-hidden='true' class='fa fa-clock-o'></i>
+<h1 class='avenir-light'>On time</h1>
+<h3 class='intro'>Speed & Elegance</h3>
+<p>
+We have over five years of experience delivering engineering solutions built around agile and test driven development philosophies.
+Backed with our experience we are competent enough to advice and choose the right tool for the job, in order to provide beautifully
+designed, carefully tested , high quality application software delivered on time.
+</p>
+</div>
+</div>
+
+    </div>
+    <div class='section' id='reason'>
+<div class='content'>
+<i aria-hidden='true' class='fa fa-question'></i>
+<h1 class='avenir-light'>Raison d'être</h1>
+<h3 class='intro'>reason to be</h3>
+<p class='first_pre'>Codemismatch is a boutique webshop. We started with the goal to fill the gap in high quality, affordable, offshore software development.</p>
+<p class='motto'>
+<mark>Our Motto :  Invent | Ideate | Innovate</mark>
+</p>
+</div>
+</div>
+
+    <div class='section' id='contact'>
+<div class='content'>
+<h1 class='text-center'>Contact</h1>
+<div class='google_map'>
+<div id='map-canvas'></div>
+</div>
+<div class='address'>
+<ul>
+<li>
+<i aria-hidden='true' class='fa fa-map-marker'></i>
+<p>A-203 Sakal 24, Near Savita green party plot, behind shreenath bunglows, Chandkheda, Ahmedabad, Gujarat, India</p>
+</li>
+<li>
+<i aria-hidden='true' class='fa fa-phone'></i>
+<p>+917990233778</p>
+</li>
+<li>
+<i aria-hidden='true' class='fa fa-envelope-o'></i>
+<p>business@codemismatch.com</p>
+</li>
+</ul>
+<div class='row contact_form'>
+<form action='https://formspree.io/codemismatch@gmail.com' class='col-md-12 col-sm-12' id='contact-form' method='post' role='form'>
+<div class='col-md-12 col-sm-12 wow fadeIn' data-wow-delay='0.3s'>
+<input class='form-control' id='name' name='name' placeholder='Name' type='text'>
+</div>
+<div class='col-md-12 col-sm-12 wow fadeIn' data-wow-delay='0.3s'>
+<input class='form-control' id='email' name='email' placeholder='Email' type='email'>
+</div>
+<div class='col-md-12 col-sm-12 wow fadeIn' data-wow-delay='0.9s'>
+<textarea class='form-control' id='message' name='message' placeholder='Message' rows='5'></textarea>
+</div>
+<div class='col-md-12 col-sm-12 wow fadeIn' data-wow-delay='0.3s'>
+<input class='form-control' id='submit' name='submit' type='submit' value='Send'>
+</div>
+</form>
+</div>
+</div>
+</div>
+</div>
+
+  </div>
+  <div class='navbar navbar-fixed-bottom footer' role='navigation'>
+<div class='container-fluid'>
+<div class='collapse navbar-collapse'>
+<ul class='nav navbar-nav navbar'>
+<li class='copyright'>Copyright © 2016 Codemismatch</li>
+<li>
+<a href='#'>
+<i aria-hidden='true' class='fa fa-facebook'></i>
+</a>
+</li>
+<li>
+<a href='#'>
+<i aria-hidden='true' class='fa fa-google-plus'></i>
+</a>
+</li>
+<li>
+<a href='#'>
+<i aria-hidden='true' class='fa fa-linkedin'></i>
+</a>
+</li>
+<li>
+<a class='smoothScroll' href='http://medium.com/@codemismatch' target='_blank'>
+<i aria-hidden='true' class='fa fa-medium'></i>
+</a>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+</div>
+
+    <script src="/javascripts/javascript.fullPage.min.js"></script>
+    <script src="/javascripts/sine-waves.min.js"></script>
+    <script src="/javascripts/custom.js"></script>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-99324257-1', 'auto');
+      ga('send', 'pageview');
+
+    </script>
+  </body>
+</html>
