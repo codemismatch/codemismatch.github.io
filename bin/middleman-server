@@ -1,4 +1,4 @@
-#!/usr/bin/env truffleruby
+#!/usr/bin/env ruby
 
 # Middleman Server Runner
 # Usage: ./bin/middleman-server [middleman-options]
