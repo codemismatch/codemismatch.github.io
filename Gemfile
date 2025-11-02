@@ -8,6 +8,9 @@ gem "middleman-autoprefixer"
 # Live-reloading plugin
 gem "middleman-livereload"
 
+# Gem for HTML minification
+gem "middleman-minify-html"
+
 # For faster file watcher updates on Windows:
 gem "wdm", "~> 0.1.0", :platforms => [:windows]
 

@@ -1,0 +1,11 @@
+#!/usr/bin/env truffleruby
+
+# Middleman Server Runner
+# Usage: ./bin/middleman-server [middleman-options]
+# Example: ./bin/middleman-server -p 4567
+
+puts "Starting Middleman server..."
+
+# Use exec to ensure signals (like Ctrl+C) are properly forwarded
+args = ARGV.empty? ? ['server'] : ARGV
+exec("bundle", "exec", "middleman", *args)

@@ -1,0 +1,14 @@
+#!/bin/bash
+# Start script for Middleman server with TruffleRuby compatibility
+
+# This script runs the Middleman development server with a patch
+# that makes it compatible with both MRI Ruby and TruffleRuby
+
+# Change to the project directory if not already there
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
+
+cd "$PROJECT_DIR"
+
+# Execute the middleman-server script with all passed arguments
+exec "$SCRIPT_DIR/middleman-server" "$@"
