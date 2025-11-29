@@ -1,0 +1,139 @@
+<h1 id="codemismatch-theme">CodeMismatch Theme</h1>
+
+<p>Enterprise AI consultancy theme with dynamic theming, color customization, and interactive features.</p>
+
+<h2 id="features">Features</h2>
+
+<ul>
+  <li>🎨 <strong>3 Theme Modes</strong>: Void (Dark), Azure (Light Gradient), Paper (Clean Light)</li>
+  <li>🌈 <strong>Dynamic Color Palettes</strong>: Real-time brand and ambient color customization</li>
+  <li>🌊 <strong>Animated Canvas Background</strong>: Smooth wave animations</li>
+  <li>💬 <strong>AI Chat Interface</strong>: “The Architect” chat UI (requires Gemini API)</li>
+  <li>📱 <strong>Fully Responsive</strong>: Mobile-first design with touch-friendly controls</li>
+  <li>🔗 <strong>Browser History Support</strong>: Back/forward navigation with URL hashes</li>
+  <li>⚡ <strong>Optimized</strong>: 377 lines of clean JavaScript, 12KB total</li>
+</ul>
+
+<h2 id="directory-structure">Directory Structure</h2>
+
+<p><code>
+source/themes/codemismatch/
+├── javascripts/
+│   └── custom.js          # All theme logic (377 lines)
+├── layouts/
+│   └── _layout.html.erb   # Complete theme HTML
+├── pages/
+│   └── index.html.erb     # Entry point
+└── stylesheets/
+    └── style.css          # Theme styles &amp; animations
+</code></p>
+
+<h2 id="sections">Sections</h2>
+
+<ol>
+  <li><strong>Hero</strong> - Landing with animated wave background and CTAs</li>
+  <li><strong>Services</strong> - 4-grid capability showcase</li>
+  <li><strong>Work</strong> - Portfolio case studies with images</li>
+  <li><strong>AI Architect</strong> - Chat interface for Gemini integration</li>
+  <li><strong>Contact</strong> - Contact form and company info</li>
+  <li><strong>Placeholder</strong> - For Open Source/Blog (coming soon)</li>
+</ol>
+
+<h2 id="theme-switching">Theme Switching</h2>
+
+<p>Access the theme control panel via the floating button (bottom-right):
+- <strong>Void</strong>: Dark mode with gradient overlays
+- <strong>Azure</strong>: Light mode with blue gradient
+- <strong>Paper</strong>: Clean minimal light theme</p>
+
+<h2 id="color-customization">Color Customization</h2>
+
+<p>Use the color pickers in the theme panel to:
+- Adjust <strong>Brand Color</strong>: Buttons, accents, links
+- Adjust <strong>Ambient Color</strong>: Background gradients</p>
+
+<p>The system generates a full 50-950 palette dynamically.</p>
+
+<h2 id="navigation">Navigation</h2>
+
+<p>All navigation uses client-side routing with history support:
+- URLs update with hashes: <code>#home</code>, <code>#services</code>, <code>#work</code>, etc.
+- Browser back/forward buttons work correctly
+- Deep linking supported</p>
+
+<h2 id="ai-chat-integration">AI Chat Integration</h2>
+
+<p>To enable full chat functionality:</p>
+
+<ol>
+  <li>Get a Gemini API key from Google AI Studio</li>
+  <li>Update <code>custom.js</code> line 364 in <code>handleChatSend()</code>:</li>
+</ol>
+
+<p><code>javascript
+// Replace placeholder with actual API call
+const API_KEY = 'your-gemini-api-key';
+const genAI = new GoogleGenerativeAI(API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
+const result = await model.generateContent(text);
+const responseText = result.response.text();
+</code></p>
+
+<ol>
+  <li>Include Gemini SDK in the layout:
+<code>html
+&lt;script src="https://cdn.jsdelivr.net/npm/@google/generative-ai"&gt;&lt;/script&gt;
+</code></li>
+</ol>
+
+<h2 id="usage">Usage</h2>
+
+<p>Enable this theme in <code>config.rb</code>:</p>
+
+<p><code>ruby
+set :active_theme, 'codemismatch'
+</code></p>
+
+<p>Then build or serve:</p>
+
+<p><code>bash
+bundle exec middleman build
+# or
+bundle exec middleman server
+</code></p>
+
+<h2 id="dependencies">Dependencies</h2>
+
+<ul>
+  <li><strong>Tailwind CSS</strong>: Via CDN (https://cdn.tailwindcss.com)</li>
+  <li><strong>Lucide Icons</strong>: Via CDN (https://unpkg.com/lucide@latest)</li>
+  <li><strong>IBM Plex Fonts</strong>: Sans &amp; Mono via Google Fonts</li>
+</ul>
+
+<h2 id="performance">Performance</h2>
+
+<ul>
+  <li>JavaScript: 12KB (377 lines, fully functional)</li>
+  <li>Canvas animation: ~60fps, GPU-accelerated</li>
+  <li>CSS: Minimal custom styles, leverages Tailwind</li>
+  <li>No external dependencies bundled</li>
+</ul>
+
+<h2 id="browser-support">Browser Support</h2>
+
+<ul>
+  <li>Chrome/Edge 90+</li>
+  <li>Firefox 88+</li>
+  <li>Safari 14+</li>
+  <li>Mobile browsers (iOS Safari, Chrome Mobile)</li>
+</ul>
+
+<h2 id="credits">Credits</h2>
+
+<p>Design inspired by modern enterprise AI platforms.
+Developed for CodeMismatch consulting brand.</p>
+
+<hr />
+
+<p><strong>Version</strong>: 1.0.0<br />
+<strong>Last Updated</strong>: November 2024</p>
