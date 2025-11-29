@@ -1,0 +1,322 @@
+== Activating: file_watcher
+== Activating: front_matter
+== Activating: data
+== Activating: inline_url_rewriter
+== Activating: sitemap_ondisk
+== Activating: sitemap_import
+== Activating: sitemap_endpoint
+== Activating: sitemap_proxies
+== Activating: sitemap_redirects
+== Activating: sitemap_move_files
+== Activating: sitemap_ignore
+== Activating: external_helpers
+== Activating: erb_renderer
+== Activating: coffee_renderer
+== Activating: haml_renderer
+== Activating: sass_renderer
+== Activating: markdown_renderer
+== Failed Activation `liquid_renderer` : cannot load such file -- liquid
+== Failed Activation `slim_renderer` : cannot load such file -- slim
+== Activating: less_renderer
+== Activating: default_helpers
+== Activating: lorem
+== Activating: routing
+== Activating: collections
+== Change (#<Set: {:source}>): index.html.erb
+== Change (#<Set: {:source}>): images/wallpap.jpeg
+== Change (#<Set: {:source}>): images/mismatch.ico
+== Change (#<Set: {:source}>): images/draftr/feature1.png
+== Change (#<Set: {:source}>): images/draftr/feature3.png
+== Change (#<Set: {:source}>): images/draftr/feature2.png
+== Change (#<Set: {:source}>): images/draftr/feature4.png
+== Change (#<Set: {:source}>): images/draftr/showcase.png
+== Change (#<Set: {:source}>): images/draftr/favicon.png
+== Change (#<Set: {:source}>): images/draftr/logo.svg
+== Change (#<Set: {:source}>): images/draftr/hero3.png
+== Change (#<Set: {:source}>): images/draftr/hero2.jpg
+== Change (#<Set: {:source}>): images/draftr/hero1.jpg
+== Change (#<Set: {:source}>): images/js1.png
+== Change (#<Set: {:source}>): images/js.png
+== Change (#<Set: {:source}>): images/congen/ralf-gabler.jpg
+== Change (#<Set: {:source}>): images/congen/jannik-lindner.jpg
+== Change (#<Set: {:source}>): images/congen/pilar.jpg
+== Change (#<Set: {:source}>): images/congen/contentin-plan.png
+== Change (#<Set: {:source}>): images/congen/contentin-write.png
+== Change (#<Set: {:source}>): images/congen/logo.svg
+== Change (#<Set: {:source}>): images/.keep
+== Change (#<Set: {:source}>): images/golang.png
+== Change (#<Set: {:source}>): images/logo.png
+== Change (#<Set: {:source}>): images/clojure.png
+== Change (#<Set: {:source}>): images/rails.png
+== Change (#<Set: {:source}>): images/nodejs.png
+== Change (#<Set: {:source}>): layouts/layout.erb
+== Change (#<Set: {:source}>): javascripts/javascript.fullPage.min.js
+== Change (#<Set: {:source}>): javascripts/bootstrap.min.js
+== Change (#<Set: {:source}>): javascripts/sine-waves.min.js
+== Change (#<Set: {:source}>): fonts/avenir-lt.ttf
+== Change (#<Set: {:source}>): fonts/Intro.otf
+== Change (#<Set: {:source}>): pages/google69818aa568821ebc.html
+== Change (#<Set: {:source}>): themes/codemismatch/README.md
+== Change (#<Set: {:source, :no_frontmatter}>): themes/codemismatch/layouts/_layout.html.erb
+== Change (#<Set: {:source}>): themes/codemismatch/javascripts/custom.js
+== Change (#<Set: {:source}>): themes/codemismatch/javascripts/main.js
+== Change (#<Set: {:source}>): themes/codemismatch/stylesheets/style.css
+== Change (#<Set: {:source, :no_frontmatter}>): themes/symphony/layouts/_nav.html.haml
+== Change (#<Set: {:source, :no_frontmatter}>): themes/symphony/layouts/_footer.html.haml
+== Change (#<Set: {:source}>): themes/symphony/javascripts/custom.js
+== Change (#<Set: {:source, :no_frontmatter}>): themes/symphony/pages/_slide1.html.haml
+== Change (#<Set: {:source, :no_frontmatter}>): themes/symphony/pages/_home.html.haml
+== Change (#<Set: {:source, :no_frontmatter}>): themes/symphony/pages/_contact.html.haml
+== Change (#<Set: {:source, :no_frontmatter}>): themes/symphony/pages/_slide3.html.haml
+== Change (#<Set: {:source, :no_frontmatter}>): themes/symphony/pages/_reason.html.haml
+== Change (#<Set: {:source, :no_frontmatter}>): themes/symphony/pages/_slide2.html.haml
+== Change (#<Set: {:source}>): themes/symphony/stylesheets/style.css
+== Change (#<Set: {:source}>): themes/draftr/images/wallpap.jpeg
+== Change (#<Set: {:source, :no_frontmatter}>): themes/draftr/layouts/_nav.html.haml
+== Change (#<Set: {:source, :no_frontmatter}>): themes/draftr/layouts/_footer.html.haml
+== Change (#<Set: {:source}>): themes/draftr/javascripts/custom.js
+== Change (#<Set: {:source, :no_frontmatter}>): themes/draftr/pages/_tech.html.haml
+== Change (#<Set: {:source, :no_frontmatter}>): themes/draftr/pages/_services.html.haml
+== Change (#<Set: {:source, :no_frontmatter}>): themes/draftr/pages/_home.html.haml
+== Change (#<Set: {:source, :no_frontmatter}>): themes/draftr/pages/_contact.html.haml
+== Change (#<Set: {:source, :no_frontmatter}>): themes/draftr/pages/_reason.html.haml
+== Change (#<Set: {:source}>): themes/draftr/stylesheets/style.css
+== Change (#<Set: {:source, :no_frontmatter}>): themes/congen/layouts/_nav.html.haml
+== Change (#<Set: {:source, :no_frontmatter}>): themes/congen/layouts/_footer.html.haml
+== Change (#<Set: {:source}>): themes/congen/javascripts/custom.js
+== Change (#<Set: {:source, :no_frontmatter}>): themes/congen/pages/_tech.html.haml
+== Change (#<Set: {:source, :no_frontmatter}>): themes/congen/pages/_services.html.haml
+== Change (#<Set: {:source, :no_frontmatter}>): themes/congen/pages/_feature.html.haml
+== Change (#<Set: {:source, :no_frontmatter}>): themes/congen/pages/_home.html.haml
+== Change (#<Set: {:source, :no_frontmatter}>): themes/congen/pages/_contact.html.haml
+== Change (#<Set: {:source, :no_frontmatter}>): themes/congen/pages/_reason.html.haml
+== Change (#<Set: {:source}>): themes/congen/stylesheets/style.css
+== Change (#<Set: {:source}>): stylesheets/bootstrap.min.css
+== Change (#<Set: {:source}>): stylesheets/javascript.fullPage.css
+== Change (#<Set: {:source}>): stylesheets/animate.min.css
+== Rebuilding resource list
+== Reading: Local config: config.rb
+== Activating: autoprefixer
+== Requesting resource list rebuilding: first_run_change_page
+== Requesting resource list rebuilding: first_run_change_page
+== Requesting resource list rebuilding: first_run_change_page
+== Requesting resource list rebuilding: first_run_change_page
+== Activating: minify_css
+== Activating: minify_javascript
+== Activating: minify_html
+Loaded extensions:
+== Extension: file_watcher
+== Extension: front_matter
+== Extension: data
+== Extension: inline_url_rewriter
+== Extension: sitemap_ondisk
+== Extension: sitemap_import
+== Extension: sitemap_endpoint
+== Extension: sitemap_proxies
+== Extension: sitemap_redirects
+== Extension: sitemap_move_files
+== Extension: sitemap_ignore
+== Extension: external_helpers
+== Extension: erb_renderer
+== Extension: coffee_renderer
+== Extension: haml_renderer
+== Extension: sass_renderer
+== Extension: markdown_renderer
+== Extension: less_renderer
+== Extension: default_helpers
+== Extension: lorem
+== Extension: routing
+== Extension: collections
+== Extension: autoprefixer
+== Extension: minify_css
+== Extension: minify_javascript
+== Extension: minify_html
+== Change (#<Set: {:source}>): index.html.erb
+== Change (#<Set: {:source}>): images/wallpap.jpeg
+== Change (#<Set: {:source}>): images/mismatch.ico
+== Change (#<Set: {:source}>): images/draftr/feature1.png
+== Change (#<Set: {:source}>): images/draftr/feature3.png
+== Change (#<Set: {:source}>): images/draftr/feature2.png
+== Change (#<Set: {:source}>): images/draftr/feature4.png
+== Change (#<Set: {:source}>): images/draftr/showcase.png
+== Change (#<Set: {:source}>): images/draftr/favicon.png
+== Change (#<Set: {:source}>): images/draftr/logo.svg
+== Change (#<Set: {:source}>): images/draftr/hero3.png
+== Change (#<Set: {:source}>): images/draftr/hero2.jpg
+== Change (#<Set: {:source}>): images/draftr/hero1.jpg
+== Change (#<Set: {:source}>): images/js1.png
+== Change (#<Set: {:source}>): images/js.png
+== Change (#<Set: {:source}>): images/congen/ralf-gabler.jpg
+== Change (#<Set: {:source}>): images/congen/jannik-lindner.jpg
+== Change (#<Set: {:source}>): images/congen/pilar.jpg
+== Change (#<Set: {:source}>): images/congen/contentin-plan.png
+== Change (#<Set: {:source}>): images/congen/contentin-write.png
+== Change (#<Set: {:source}>): images/congen/logo.svg
+== Change (#<Set: {:source}>): images/.keep
+== Change (#<Set: {:source}>): images/golang.png
+== Change (#<Set: {:source}>): images/logo.png
+== Change (#<Set: {:source}>): images/clojure.png
+== Change (#<Set: {:source}>): images/rails.png
+== Change (#<Set: {:source}>): images/nodejs.png
+== Change (#<Set: {:source}>): layouts/layout.erb
+== Change (#<Set: {:source}>): javascripts/javascript.fullPage.min.js
+== Change (#<Set: {:source}>): javascripts/bootstrap.min.js
+== Change (#<Set: {:source}>): javascripts/sine-waves.min.js
+== Change (#<Set: {:source}>): fonts/avenir-lt.ttf
+== Change (#<Set: {:source}>): fonts/Intro.otf
+== Change (#<Set: {:source}>): pages/google69818aa568821ebc.html
+== Change (#<Set: {:source}>): themes/codemismatch/README.md
+== Change (#<Set: {:source, :no_frontmatter}>): themes/codemismatch/layouts/_layout.html.erb
+== Change (#<Set: {:source}>): themes/codemismatch/javascripts/custom.js
+== Change (#<Set: {:source}>): themes/codemismatch/javascripts/main.js
+== Change (#<Set: {:source}>): themes/codemismatch/stylesheets/style.css
+== Change (#<Set: {:source, :no_frontmatter}>): themes/symphony/layouts/_nav.html.haml
+== Change (#<Set: {:source, :no_frontmatter}>): themes/symphony/layouts/_footer.html.haml
+== Change (#<Set: {:source}>): themes/symphony/javascripts/custom.js
+== Change (#<Set: {:source, :no_frontmatter}>): themes/symphony/pages/_slide1.html.haml
+== Change (#<Set: {:source, :no_frontmatter}>): themes/symphony/pages/_home.html.haml
+== Change (#<Set: {:source, :no_frontmatter}>): themes/symphony/pages/_contact.html.haml
+== Change (#<Set: {:source, :no_frontmatter}>): themes/symphony/pages/_slide3.html.haml
+== Change (#<Set: {:source, :no_frontmatter}>): themes/symphony/pages/_reason.html.haml
+== Change (#<Set: {:source, :no_frontmatter}>): themes/symphony/pages/_slide2.html.haml
+== Change (#<Set: {:source}>): themes/symphony/stylesheets/style.css
+== Change (#<Set: {:source}>): themes/draftr/images/wallpap.jpeg
+== Change (#<Set: {:source, :no_frontmatter}>): themes/draftr/layouts/_nav.html.haml
+== Change (#<Set: {:source, :no_frontmatter}>): themes/draftr/layouts/_footer.html.haml
+== Change (#<Set: {:source}>): themes/draftr/javascripts/custom.js
+== Change (#<Set: {:source, :no_frontmatter}>): themes/draftr/pages/_tech.html.haml
+== Change (#<Set: {:source, :no_frontmatter}>): themes/draftr/pages/_services.html.haml
+== Change (#<Set: {:source, :no_frontmatter}>): themes/draftr/pages/_home.html.haml
+== Change (#<Set: {:source, :no_frontmatter}>): themes/draftr/pages/_contact.html.haml
+== Change (#<Set: {:source, :no_frontmatter}>): themes/draftr/pages/_reason.html.haml
+== Change (#<Set: {:source}>): themes/draftr/stylesheets/style.css
+== Change (#<Set: {:source, :no_frontmatter}>): themes/congen/layouts/_nav.html.haml
+== Change (#<Set: {:source, :no_frontmatter}>): themes/congen/layouts/_footer.html.haml
+== Change (#<Set: {:source}>): themes/congen/javascripts/custom.js
+== Change (#<Set: {:source, :no_frontmatter}>): themes/congen/pages/_tech.html.haml
+== Change (#<Set: {:source, :no_frontmatter}>): themes/congen/pages/_services.html.haml
+== Change (#<Set: {:source, :no_frontmatter}>): themes/congen/pages/_feature.html.haml
+== Change (#<Set: {:source, :no_frontmatter}>): themes/congen/pages/_home.html.haml
+== Change (#<Set: {:source, :no_frontmatter}>): themes/congen/pages/_contact.html.haml
+== Change (#<Set: {:source, :no_frontmatter}>): themes/congen/pages/_reason.html.haml
+== Change (#<Set: {:source}>): themes/congen/stylesheets/style.css
+== Change (#<Set: {:source}>): stylesheets/bootstrap.min.css
+== Change (#<Set: {:source}>): stylesheets/javascript.fullPage.css
+== Change (#<Set: {:source}>): stylesheets/animate.min.css
+== Rebuilding resource list
+== Requesting resource list rebuilding: touched_file
+== Requesting resource list rebuilding: registered_new_manipulator_front_matter
+== Requesting resource list rebuilding: registered_new_manipulator_sitemap_ondisk
+== Requesting resource list rebuilding: registered_new_manipulator_sitemap_import
+== Requesting resource list rebuilding: registered_new_manipulator_sitemap_endpoint
+== Requesting resource list rebuilding: registered_new_manipulator_sitemap_proxies
+== Requesting resource list rebuilding: registered_new_manipulator_sitemap_redirects
+== Requesting resource list rebuilding: registered_new_manipulator_sitemap_move_files
+== Requesting resource list rebuilding: registered_new_manipulator_sitemap_ignore
+== Requesting resource list rebuilding: registered_new_manipulator_routing
+== Requesting resource list rebuilding: registered_new_manipulator_routing
+== Requesting resource list rebuilding: registered_new_manipulator_collections
+== Rebuilding resource list
+== Running manipulator: sitemap_ondisk (0)
+== Running manipulator: sitemap_endpoint (0)
+== Running manipulator: sitemap_proxies (0)
+== Running manipulator: sitemap_redirects (0)
+== Running manipulator: sitemap_ignore (0)
+== Running manipulator: sitemap_import (1)
+== Running manipulator: routing (10)
+== Running manipulator: front_matter (20)
+== Running manipulator: sitemap_move_files (101)
+== Running manipulator: collections (110)
+== Running manipulator: routing (130)
+== Prerendering CSS
+== Request: /stylesheets/animate.min.css
+== Finishing Request: stylesheets/animate.min.css (0.0s)
+== Request: /stylesheets/javascript.fullPage.css
+== Finishing Request: stylesheets/javascript.fullPage.css (0.0s)
+== Request: /themes/codemismatch/stylesheets/style.css
+== Finishing Request: themes/codemismatch/stylesheets/style.css (0.0s)
+== Request: /stylesheets/bootstrap.min.css
+== Finishing Request: stylesheets/bootstrap.min.css (0.0s)
+== Request: /themes/draftr/stylesheets/style.css
+== Finishing Request: themes/draftr/stylesheets/style.css (0.0s)
+== Request: /themes/congen/stylesheets/style.css
+== Finishing Request: themes/congen/stylesheets/style.css (0.0s)
+== Request: /themes/symphony/stylesheets/style.css
+== Finishing Request: themes/symphony/stylesheets/style.css (0.0s)
+   identical  build/themes/codemismatch/stylesheets/style.css
+   identical  build/themes/symphony/stylesheets/style.css
+   identical  build/themes/congen/stylesheets/style.css
+   identical  build/stylesheets/javascript.fullPage.css
+   identical  build/themes/draftr/stylesheets/style.css
+   identical  build/stylesheets/animate.min.css
+   identical  build/stylesheets/bootstrap.min.css
+== Building files
+   identical  build/images/logo.png
+   identical  build/images/js.png
+   identical  build/images/golang.png
+   identical  build/images/js1.png
+   identical  build/images/draftr/favicon.png
+   identical  build/images/clojure.png
+   identical  build/images/rails.png
+   identical  build/images/nodejs.png
+   identical  build/images/draftr/hero3.png
+   identical  build/images/draftr/feature4.png
+   identical  build/images/draftr/feature3.png
+   identical  build/images/congen/pilar.jpg
+   identical  build/images/draftr/feature2.png
+   identical  build/images/draftr/showcase.png
+   identical  build/images/congen/contentin-plan.png
+   identical  build/images/congen/ralf-gabler.jpg
+   identical  build/images/congen/jannik-lindner.jpg
+   identical  build/images/congen/contentin-write.png
+   identical  build/fonts/Intro.otf
+   identical  build/images/draftr/hero2.jpg
+   identical  build/images/draftr/feature1.png
+   identical  build/images/draftr/hero1.jpg
+   identical  build/images/mismatch.ico
+   identical  build/fonts/avenir-lt.ttf
+   identical  build/themes/draftr/images/wallpap.jpeg
+   identical  build/images/wallpap.jpeg
+== Request: /images/draftr/logo.svg
+== Finishing Request: images/draftr/logo.svg (0.0s)
+   identical  build/images/draftr/logo.svg
+== Request: /images/congen/logo.svg
+== Finishing Request: images/congen/logo.svg (0.0s)
+   identical  build/images/congen/logo.svg
+== Request: /themes/codemismatch/javascripts/main.js
+== Finishing Request: themes/codemismatch/javascripts/main.js (0.0s)
+   identical  build/themes/codemismatch/javascripts/main.js
+== Request: /images/.keep
+== Finishing Request: images/.keep (0.0s)
+   identical  build/images/.keep
+== Request: /themes/codemismatch/javascripts/custom.js
+== Finishing Request: themes/codemismatch/javascripts/custom.js (0.0s)
+== Request: /javascripts/javascript.fullPage.min.js
+== Finishing Request: javascripts/javascript.fullPage.min.js (0.0s)
+   identical  build/javascripts/javascript.fullPage.min.js
+== Request: /pages/google69818aa568821ebc.html
+== Finishing Request: pages/google69818aa568821ebc.html (0.0s)
+   identical  build/pages/google69818aa568821ebc.html
+== Request: /themes/congen/javascripts/custom.js
+== Finishing Request: themes/congen/javascripts/custom.js (0.0s)
+== Request: /javascripts/sine-waves.min.js
+== Finishing Request: javascripts/sine-waves.min.js (0.0s)
+   identical  build/javascripts/sine-waves.min.js
+== Request: /themes/draftr/javascripts/custom.js
+== Finishing Request: themes/draftr/javascripts/custom.js (0.0s)
+== Request: /javascripts/bootstrap.min.js
+== Finishing Request: javascripts/bootstrap.min.js (0.0s)
+   identical  build/javascripts/bootstrap.min.js
+== Request: /themes/symphony/javascripts/custom.js
+== Finishing Request: themes/symphony/javascripts/custom.js (0.0s)
+== Request: /index.html
+== Finishing Request: index.html (0.01s)
+   identical  build/index.html
+== Request: /themes/codemismatch/README
+== Finishing Request: themes/codemismatch/README (0.04s)
+   identical  build/themes/codemismatch/README
+   identical  build/themes/congen/javascripts/custom.js
+     updated  build/themes/draftr/javascripts/custom.js
+   identical  build/themes/symphony/javascripts/custom.js
+     updated  build/themes/codemismatch/javascripts/custom.js
+Project built successfully.

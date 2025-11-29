@@ -1,0 +1,64 @@
+#!/bin/bash
+set -e
+
+# Configuration
+DEPLOY_BRANCH="gh-pages"
+BUILD_DIR="build"
+WORKTREE_DIR=".gh-pages-deploy"
+
+echo "🚀 Starting deployment to $DEPLOY_BRANCH..."
+
+# Ensure we are in the project root
+cd "$(dirname "$0")/.."
+
+# 1. Build the site
+echo "📦 Building site..."
+rm -rf "$BUILD_DIR"
+bundle exec middleman build
+
+# 2. Prepare Worktree
+echo "🌳 Preparing git worktree..."
+rm -rf "$WORKTREE_DIR"
+git worktree prune
+
+# Check if branch exists remotely
+if git ls-remote --exit-code --heads origin "$DEPLOY_BRANCH"; then
+    echo "   Fetching existing $DEPLOY_BRANCH..."
+    git fetch origin "$DEPLOY_BRANCH"
+    git worktree add -B "$DEPLOY_BRANCH" "$WORKTREE_DIR" "origin/$DEPLOY_BRANCH"
+else
+    echo "   Creating new orphan branch $DEPLOY_BRANCH..."
+    git worktree add --detach "$WORKTREE_DIR"
+    cd "$WORKTREE_DIR"
+    git checkout --orphan "$DEPLOY_BRANCH"
+    git reset --hard
+    cd ..
+fi
+
+# 3. Copy Build Files
+echo "📂 Copying build files..."
+# Clean worktree directory (except .git)
+find "$WORKTREE_DIR" -mindepth 1 -maxdepth 1 ! -name ".git" -exec rm -rf {} +
+# Copy build contents
+cp -R "$BUILD_DIR/" "$WORKTREE_DIR/"
+
+# Copy CNAME and Google Verification (from source root/pages to deployment root)
+echo "📄 Copying CNAME and verification files..."
+cp CNAME "$WORKTREE_DIR/" || echo "Warning: CNAME not found"
+cp source/pages/google* "$WORKTREE_DIR/" || echo "Warning: Google verification file not found"
+
+# 4. Commit and Push
+echo "💾 Committing changes..."
+cd "$WORKTREE_DIR"
+git add --all
+git commit -m "Deploy: $(date '+%Y-%m-%d %H:%M:%S')" || echo "No changes to commit"
+
+echo "⬆️  Pushing to origin..."
+git push origin "$DEPLOY_BRANCH"
+
+# 5. Cleanup
+echo "🧹 Cleaning up..."
+cd ..
+git worktree remove "$WORKTREE_DIR" --force
+
+echo "✅ Deployment complete!"

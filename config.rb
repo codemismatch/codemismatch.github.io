@@ -47,6 +47,10 @@ set :haml, { :format => :html5 }
 # Change this value to switch themes
 set :active_theme, 'codemismatch'
 
+if config[:active_theme] == 'codemismatch'
+  page "/index.html", layout: false
+end
+
 # Available themes
 set :themes, {
   'symphony' => {
@@ -92,6 +96,13 @@ end
 
 configure :build do
   activate :minify_css
-  activate :minify_javascript
+  # JavaScript minification with ES6 support
+  # Note: main.js uses ES6 modules (import) which uglifier can't handle, so it will be skipped
+  activate :minify_javascript,
+           ignore: %r{.*main\.js$},
+           compressor: proc {
+             require 'terser'
+             Terser.new
+           }
   activate :minify_html
 end

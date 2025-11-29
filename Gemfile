@@ -19,3 +19,4 @@ gem "tzinfo-data", platforms: [:windows, :jruby]
 
 # Code style checker
 gem "rubocop"
+gem "terser"
