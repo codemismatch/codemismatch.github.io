@@ -16,15 +16,22 @@
       window.location.protocol = "https";
     </script>
 
-
     <title><%= current_page.data.title || "CodeMismatch" %></title>
 
-    <%= stylesheet_link_tag "animate.min" %>
-    <%= stylesheet_link_tag "bootstrap.min" %>
-    <%= stylesheet_link_tag "javascript.fullPage" %>
+    <% theme_name = config[:active_theme] %>
+    <% theme = config[:themes][theme_name] %>
+    <% if theme && theme[:fonts] %>
+      <% theme[:fonts].each do |font| %>
+        <link href="<%= font %>" rel="stylesheet">
+      <% end %>
+    <% end %>
 
-    <link href="https://fonts.googleapis.com/css?family=Poiret+One|Raleway" rel="stylesheet">
-    <%= stylesheet_link_tag "style" %>
+    <% if theme && theme[:stylesheets] %>
+      <% theme[:stylesheets].each do |stylesheet| %>
+        <%= stylesheet_link_tag stylesheet %>
+      <% end %>
+    <% end %>
+
     <link rel="shortcut icon" href="images/mismatch.ico" type="image/ico"/>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -33,9 +40,13 @@
   </head>
   <body>
     <%= yield %>
-    <%= javascript_include_tag "javascript.fullPage.min.js" %>
-    <%= javascript_include_tag "sine-waves.min" %>
-    <%= javascript_include_tag "custom" %>
+    
+    <% if theme && theme[:javascripts] %>
+      <% theme[:javascripts].each do |javascript| %>
+        <%= javascript_include_tag javascript %>
+      <% end %>
+    <% end %>
+
     <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),

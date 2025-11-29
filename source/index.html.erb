@@ -2,21 +2,45 @@
 title: Codemismatch - Invent | Ideate | Innovate  
 ---
 
-<div id="superContainer" >
-   <%= partial "layouts/_nav" %>
- <div class="slide-buttons">
-    <a href="#" class="slide_up" id="moveSectionUp"><i class="fa fa-angle-up"></i></a>
-    <a href="#" class="slide_down" id="moveSectionDown"><i class="fa fa-angle-down"></i></a>
-  </div>
-  <div id="fullpage">
-    <%= partial "pages/_home" %>
-   <div class="section" id="services">
-     <%= partial "pages/_slide1" %>
-     <%= partial "pages/_slide2" %>
-     <%= partial "pages/_slide3" %>
+<% theme_name = config[:active_theme] %>
+<% theme_path_prefix = "themes/#{theme_name}" %>
+
+<% if theme_name == 'symphony' %>
+  <div id="superContainer">
+    <%= partial "#{theme_path_prefix}/layouts/_nav" %>
+    <div class="slide-buttons">
+      <a href="#" class="slide_up" id="moveSectionUp"><i class="fa fa-angle-up"></i></a>
+      <a href="#" class="slide_down" id="moveSectionDown"><i class="fa fa-angle-down"></i></a>
     </div>
-    <%= partial "pages/_reason" %>
-    <%= partial "pages/_contact" %>
+    <div id="fullpage">
+      <%= partial "#{theme_path_prefix}/pages/_home" %>
+      <div class="section" id="services">
+        <%= partial "#{theme_path_prefix}/pages/_slide1" %>
+        <%= partial "#{theme_path_prefix}/pages/_slide2" %>
+        <%= partial "#{theme_path_prefix}/pages/_slide3" %>
+      </div>
+      <%= partial "#{theme_path_prefix}/pages/_reason" %>
+      <%= partial "#{theme_path_prefix}/pages/_contact" %>
+    </div>
+    <%= partial "#{theme_path_prefix}/layouts/_footer" %>
   </div>
-  <%= partial "layouts/_footer" %>
-</div>
+<% elsif theme_name == 'draftr' %>
+  <%= partial "#{theme_path_prefix}/layouts/_nav" %>
+  <%= partial "#{theme_path_prefix}/pages/_home" %>
+  <%= partial "#{theme_path_prefix}/pages/_services" %>
+  <%= partial "#{theme_path_prefix}/pages/_tech" %>
+  <%= partial "#{theme_path_prefix}/pages/_reason" %>
+  <%= partial "#{theme_path_prefix}/pages/_contact" %>
+  <%= partial "#{theme_path_prefix}/layouts/_footer" %>
+<% elsif theme_name == 'congen' %>
+  <%= partial "#{theme_path_prefix}/layouts/_nav" %>
+  <%= partial "#{theme_path_prefix}/pages/_home" %>
+  <%= partial "#{theme_path_prefix}/pages/_feature" %>
+  <%= partial "#{theme_path_prefix}/pages/_tech" %>
+  <%= partial "#{theme_path_prefix}/pages/_services" %>
+  <%= partial "#{theme_path_prefix}/pages/_reason" %>
+  <%= partial "#{theme_path_prefix}/pages/_contact" %>
+  <%= partial "#{theme_path_prefix}/layouts/_footer" %>
+<% elsif theme_name == 'codemismatch' %>
+  <%= partial "themes/codemismatch/layouts/layout" %>
+<% end %>

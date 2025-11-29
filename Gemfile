@@ -16,3 +16,6 @@ gem "wdm", "~> 0.1.0", :platforms => [:windows]
 
 # Windows does not come with time zone data
 gem "tzinfo-data", platforms: [:windows, :jruby]
+
+# Code style checker
+gem "rubocop"

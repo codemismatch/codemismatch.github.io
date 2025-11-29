@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeMismatch | Enterprise AI Architecture</title>
+    <meta name="description" content="Enterprise AI Consultancy. Bridging the gap between legacy systems and cognitive intelligence.">
+    <meta name="theme-color" content="#ffffff">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['IBM Plex Sans', 'sans-serif'],
+              mono: ['IBM Plex Mono', 'monospace'],
+            },
+            colors: {
+              brand: {
+                50: 'rgb(var(--brand-50) / <alpha-value>)',
+                100: 'rgb(var(--brand-100) / <alpha-value>)',
+                200: 'rgb(var(--brand-200) / <alpha-value>)',
+                300: 'rgb(var(--brand-300) / <alpha-value>)',
+                400: 'rgb(var(--brand-400) / <alpha-value>)',
+                500: 'rgb(var(--brand-500) / <alpha-value>)',
+                600: 'rgb(var(--brand-600) / <alpha-value>)',
+                700: 'rgb(var(--brand-700) / <alpha-value>)',
+                800: 'rgb(var(--brand-800) / <alpha-value>)',
+                900: 'rgb(var(--brand-900) / <alpha-value>)',
+                950: 'rgb(var(--brand-950) / <alpha-value>)',
+              },
+              ambient: {
+                50: 'rgb(var(--ambient-50) / <alpha-value>)',
+                100: 'rgb(var(--ambient-100) / <alpha-value>)',
+                200: 'rgb(var(--ambient-200) / <alpha-value>)',
+                300: 'rgb(var(--ambient-300) / <alpha-value>)',
+                400: 'rgb(var(--ambient-400) / <alpha-value>)',
+                500: 'rgb(var(--ambient-500) / <alpha-value>)',
+                600: 'rgb(var(--ambient-600) / <alpha-value>)',
+                700: 'rgb(var(--ambient-700) / <alpha-value>)',
+                800: 'rgb(var(--ambient-800) / <alpha-value>)',
+                900: 'rgb(var(--ambient-900) / <alpha-value>)',
+                950: 'rgb(var(--ambient-950) / <alpha-value>)',
+              },
+              skin: {
+                base: 'var(--bg-base)',
+                surface: 'var(--bg-surface)',
+                'surface-hover': 'var(--bg-surface-hover)',
+                text: 'var(--text-main)',
+                muted: 'var(--text-muted)',
+                border: 'var(--border-color)',
+                'card-border': 'var(--card-border)',
+              }
+            },
+            animation: {
+              'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'spectrum': 'spectrum 4s ease-in-out infinite',
+              'fade-in': 'fadeIn 0.3s ease-out forwards',
+            },
+            keyframes: {
+              spectrum: {
+                '0%, 100%': { color: 'rgb(var(--brand-600))' },
+                '33%': { color: '#6366f1' }, // Indigo 500
+                '66%': { color: '#a855f7' }, // Purple 500
+              },
+              fadeIn: {
+                '0%': { opacity: '0', transform: 'translateY(-10px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' },
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      :root {
+        /* Initial Variables (will be overwritten by JS) */
+        --brand-600: 0 96 138; 
+      }
+      
+      body {
+        background-color: var(--bg-base);
+        color: var(--text-main);
+        transition: background-color 0.5s ease, color 0.5s ease;
+      }
+
+      /* Custom scrollbar */
+      ::-webkit-scrollbar { width: 8px; }
+      ::-webkit-scrollbar-track { background: var(--bg-base); }
+      ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 0px; }
+      ::-webkit-scrollbar-thumb:hover { background: rgb(var(--brand-500)); }
+
+      /* Section Visibility Logic */
+      .page-section { display: none; }
+      .page-section.active { display: block; animation: fadeIn 0.5s ease-out; }
+      @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+      
+      .hidden-important { display: none !important; }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.30.0",
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.555.0",
+    "express": "https://aistudiocdn.com/express@^5.1.0",
+    "cors": "https://aistudiocdn.com/cors@^2.8.5"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body class="min-h-screen transition-colors duration-500 selection:bg-brand-500 selection:text-white" id="app-body">
+
+    <!-- Navbar -->
+    <nav class="fixed top-0 left-0 w-full z-50 border-b border-skin-border bg-skin-surface/90 backdrop-blur-md transition-colors duration-500">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            
+            <!-- Logo -->
+            <div class="cursor-pointer flex items-center tracking-tighter select-none group" onclick="navigateTo('home')">
+                <span class="font-sans font-light text-2xl text-skin-text group-hover:text-skin-text/80 transition-colors duration-300">Cod</span>
+                <div class="mx-[1px] relative flex items-center justify-center h-6 w-5 transform translate-y-[1px]">
+                    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full animate-spectrum transition-colors duration-300">
+                        <path d="M2 6H18" stroke="currentColor" stroke-width="2" stroke-linecap="square" />
+                        <path d="M2 10H18" stroke="currentColor" stroke-width="2" stroke-linecap="square" />
+                        <path d="M2 14H18" stroke="currentColor" stroke-width="2" stroke-linecap="square" />
+                        <path d="M12 3L8 17" stroke="currentColor" stroke-width="2" stroke-linecap="square" />
+                    </svg>
+                </div>
+                <span class="font-sans font-light text-2xl text-skin-text group-hover:text-skin-text/80 transition-colors duration-300">mismatch</span>
+            </div>
+
+            <!-- Desktop Nav -->
+            <div class="hidden md:flex items-center gap-6 lg:gap-8 h-full">
+                <!-- Products Dropdown -->
+                <div class="relative group h-full flex items-center">
+                    <button class="flex items-center gap-1 font-mono text-sm tracking-widest uppercase text-skin-muted hover:text-skin-text transition-colors h-full outline-none">
+                        Products <i data-lucide="chevron-down" class="w-3.5 h-3.5 group-hover:rotate-180 transition-transform duration-300"></i>
+                    </button>
+                    <div class="absolute top-[calc(100%-1px)] -left-4 w-80 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-2 group-hover:translate-y-0">
+                        <div class="bg-skin-surface border border-skin-border shadow-2xl rounded-sm overflow-hidden p-2">
+                            <div class="px-4 py-3 border-b border-skin-border mb-2">
+                                <span class="font-mono text-[10px] uppercase text-skin-muted font-bold tracking-wider">Enterprise Solutions</span>
+                            </div>
+                            <!-- Product Items -->
+                            <div onclick="navigateTo('services')" class="flex items-start gap-4 p-3 hover:bg-skin-surface-hover cursor-pointer group/item transition-colors rounded-sm">
+                                <div class="mt-1 text-skin-muted group-hover/item:text-brand-600 transition-colors"><i data-lucide="zap" class="w-5 h-5"></i></div>
+                                <div>
+                                    <div class="font-sans font-bold text-skin-text text-base group-hover/item:text-brand-600 transition-colors leading-tight mb-1">Neural Fabric</div>
+                                    <div class="font-mono text-[10px] text-skin-muted leading-tight">Cognitive Layer</div>
+                                </div>
+                            </div>
+                            <div onclick="navigateTo('services')" class="flex items-start gap-4 p-3 hover:bg-skin-surface-hover cursor-pointer group/item transition-colors rounded-sm">
+                                <div class="mt-1 text-skin-muted group-hover/item:text-brand-600 transition-colors"><i data-lucide="box" class="w-5 h-5"></i></div>
+                                <div>
+                                    <div class="font-sans font-bold text-skin-text text-base group-hover/item:text-brand-600 transition-colors leading-tight mb-1">Cobolbreaker</div>
+                                    <div class="font-mono text-[10px] text-skin-muted leading-tight">Legacy Code Translator</div>
+                                </div>
+                            </div>
+                            <div onclick="navigateTo('services')" class="flex items-start gap-4 p-3 hover:bg-skin-surface-hover cursor-pointer group/item transition-colors rounded-sm">
+                                <div class="mt-1 text-skin-muted group-hover/item:text-brand-600 transition-colors"><i data-lucide="shield" class="w-5 h-5"></i></div>
+                                <div>
+                                    <div class="font-sans font-bold text-skin-text text-base group-hover/item:text-brand-600 transition-colors leading-tight mb-1">Vault Zero</div>
+                                    <div class="font-mono text-[10px] text-skin-muted leading-tight">Air-gapped Infrastructure</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="navigateTo('work')" class="nav-link font-mono text-sm tracking-widest uppercase transition-colors outline-none text-skin-muted hover:text-skin-text" data-page="work">Case Studies</button>
+                <button onclick="navigateTo('services')" class="nav-link font-mono text-sm tracking-widest uppercase transition-colors outline-none text-skin-muted hover:text-skin-text" data-page="services">Capabilities</button>
+                <button onclick="navigateTo('open_source')" class="nav-link font-mono text-sm tracking-widest uppercase transition-colors outline-none text-skin-muted hover:text-skin-text" data-page="open_source">Open Source</button>
+                <button onclick="navigateTo('blog')" class="nav-link font-mono text-sm tracking-widest uppercase transition-colors outline-none text-skin-muted hover:text-skin-text" data-page="blog">Blog</button>
+                <button onclick="navigateTo('architect')" class="nav-link font-mono text-sm tracking-widest uppercase transition-colors outline-none text-skin-muted hover:text-skin-text" data-page="architect">The Architect</button>
+                
+                <button onclick="navigateTo('contact')" class="inline-flex items-center justify-center font-mono font-medium tracking-wide transition-all duration-200 focus:outline-none uppercase bg-transparent text-brand-600 border border-brand-600 hover:bg-brand-600/10 h-8 px-4 text-xs">
+                    Contact Sales
+                </button>
+            </div>
+
+            <!-- Mobile Toggle -->
+            <button class="md:hidden text-skin-text" onclick="toggleMobileMenu()">
+                <i data-lucide="menu" id="mobile-menu-icon"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden absolute top-20 left-0 w-full bg-skin-surface border-b border-skin-border p-6 flex-col gap-6 shadow-xl max-h-[calc(100vh-5rem)] overflow-y-auto animate-fade-in">
+            <div class="border-b border-skin-border pb-4">
+                <button onclick="toggleMobileProducts()" class="flex items-center justify-between w-full text-left font-mono text-lg text-skin-text hover:text-brand-600 mb-2 outline-none">
+                    PRODUCTS <i data-lucide="chevron-down" id="mobile-product-icon" class="transition-transform duration-300"></i>
+                </button>
+                <div id="mobile-products-list" class="hidden pl-2 space-y-2 mt-4 animate-fade-in">
+                    <!-- Mobile Product Items -->
+                    <button onclick="navigateTo('services'); toggleMobileMenu()" class="flex items-center gap-3 w-full text-left group p-2 hover:bg-skin-surface-hover rounded-sm outline-none">
+                        <i data-lucide="zap" class="w-4 h-4 text-skin-muted group-hover:text-brand-600"></i>
+                        <span class="font-sans font-bold text-skin-text text-sm group-hover:text-brand-600">Neural Fabric</span>
+                    </button>
+                     <button onclick="navigateTo('services'); toggleMobileMenu()" class="flex items-center gap-3 w-full text-left group p-2 hover:bg-skin-surface-hover rounded-sm outline-none">
+                        <i data-lucide="box" class="w-4 h-4 text-skin-muted group-hover:text-brand-600"></i>
+                        <span class="font-sans font-bold text-skin-text text-sm group-hover:text-brand-600">Cobolbreaker</span>
+                    </button>
+                     <button onclick="navigateTo('services'); toggleMobileMenu()" class="flex items-center gap-3 w-full text-left group p-2 hover:bg-skin-surface-hover rounded-sm outline-none">
+                        <i data-lucide="shield" class="w-4 h-4 text-skin-muted group-hover:text-brand-600"></i>
+                        <span class="font-sans font-bold text-skin-text text-sm group-hover:text-brand-600">Vault Zero</span>
+                    </button>
+                </div>
+            </div>
+            
+            <button onclick="navigateTo('work'); toggleMobileMenu()" class="text-left font-mono text-lg text-skin-text hover:text-brand-600 outline-none">Case Studies</button>
+            <button onclick="navigateTo('services'); toggleMobileMenu()" class="text-left font-mono text-lg text-skin-text hover:text-brand-600 outline-none">Capabilities</button>
+            <button onclick="navigateTo('open_source'); toggleMobileMenu()" class="text-left font-mono text-lg text-skin-text hover:text-brand-600 outline-none">Open Source</button>
+            <button onclick="navigateTo('blog'); toggleMobileMenu()" class="text-left font-mono text-lg text-skin-text hover:text-brand-600 outline-none">Blog</button>
+            <button onclick="navigateTo('architect'); toggleMobileMenu()" class="text-left font-mono text-lg text-skin-text hover:text-brand-600 outline-none">The Architect</button>
+            <button onclick="navigateTo('contact'); toggleMobileMenu()" class="inline-flex items-center justify-center font-mono font-medium tracking-wide transition-all duration-200 focus:outline-none uppercase bg-brand-600 text-white hover:bg-brand-500 border border-transparent shadow-[0_0_15px_rgba(37,99,235,0.3)] w-full h-12 px-6 text-sm">Start Engagement</button>
+        </div>
+    </nav>
+
+    <!-- Main Content Wrapper -->
+    <main class="pt-20">
+        
+        <!-- HERO SECTION (Home) -->
+        <section id="section-hero" class="page-section">
+            <div class="relative pt-24 pb-20 lg:pt-32 lg:pb-32 overflow-hidden min-h-[90vh] flex flex-col justify-start transition-colors duration-500">
+                <!-- Background Decor -->
+                <div class="absolute top-0 right-0 -mr-40 -mt-40 w-[600px] h-[600px] bg-brand-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+                <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-96 h-96 bg-brand-900/5 rounded-full blur-[80px] pointer-events-none"></div>
+
+                <!-- Canvas Wave -->
+                <div class="absolute inset-0 top-32 z-0">
+                    <canvas id="wave-canvas" class="w-full h-full"></canvas>
+                </div>
+
+                <!-- Grid Overlay -->
+                <div class="absolute inset-0 bg-[linear-gradient(to_right,rgba(59,130,246,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(59,130,246,0.05)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none z-0"></div>
+
+                <div class="max-w-7xl mx-auto px-6 relative z-10 w-full mt-8 md:mt-12">
+                    <div class="max-w-5xl">
+                        <h1 class="font-sans font-semibold text-5xl md:text-7xl lg:text-8xl leading-none text-skin-text mb-8 tracking-tight">
+                            code<br/>
+                            <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 via-indigo-500 to-purple-500 font-light animate-pulse-slow">
+                                symphony
+                            </span>
+                        </h1>
+                        <p class="font-mono text-skin-muted text-lg md:text-xl max-w-2xl mb-12 leading-relaxed border-l border-skin-border pl-6 bg-skin-surface/40 backdrop-blur-md py-4 pr-4">
+                            We look at software as a symphony of many individual units of decision. We help enterprises make those decisions efficient, informed, and AI-driven.
+                            <br/><br/>
+                            <span class="text-brand-600 text-sm">Testing • Pair Programming • Cognitive Architecture</span>
+                        </p>
+                        <div class="flex flex-col sm:flex-row gap-4">
+                            <button onclick="navigateTo('contact')" class="inline-flex items-center justify-center font-mono font-medium tracking-wide transition-all duration-200 focus:outline-none uppercase bg-brand-600 text-white hover:bg-brand-500 border border-transparent shadow-[0_0_15px_rgba(37,99,235,0.3)] hover:shadow-[0_0_25px_rgba(37,99,235,0.5)] h-14 px-8 text-base">
+                                Start Engagement <i data-lucide="arrow-right" class="ml-2 w-4 h-4"></i>
+                            </button>
+                            <button onclick="navigateTo('architect')" class="inline-flex items-center justify-center font-mono font-medium tracking-wide transition-all duration-200 focus:outline-none uppercase bg-skin-surface hover:bg-skin-surface-hover text-skin-text border border-skin-border h-14 px-8 text-base">
+                                Consult The Architect
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Stats -->
+                    <div class="mt-32 md:mt-40 grid grid-cols-2 md:grid-cols-4 gap-8 border-t border-skin-border pt-12 relative bg-skin-surface/30 backdrop-blur-sm p-6 rounded-lg border border-skin-border">
+                        <div class="group">
+                            <i data-lucide="brain-circuit" class="w-6 h-6 text-skin-muted group-hover:text-brand-600 mb-4 transition-colors"></i>
+                            <h3 class="text-2xl md:text-3xl font-sans font-bold text-skin-text mb-1">4.2M+</h3>
+                            <p class="font-mono text-xs text-skin-muted uppercase tracking-widest">Decision Units</p>
+                        </div>
+                        <div class="group">
+                            <i data-lucide="server" class="w-6 h-6 text-skin-muted group-hover:text-brand-600 mb-4 transition-colors"></i>
+                            <h3 class="text-2xl md:text-3xl font-sans font-bold text-skin-text mb-1">Approved</h3>
+                            <p class="font-mono text-xs text-skin-muted uppercase tracking-widest">Sandi Metz</p>
+                        </div>
+                        <div class="group">
+                            <i data-lucide="network" class="w-6 h-6 text-skin-muted group-hover:text-brand-600 mb-4 transition-colors"></i>
+                            <h3 class="text-2xl md:text-3xl font-sans font-bold text-skin-text mb-1">99.9%</h3>
+                            <p class="font-mono text-xs text-skin-muted uppercase tracking-widest">Test Coverage</p>
+                        </div>
+                         <div class="group">
+                            <i data-lucide="arrow-right" class="w-6 h-6 text-skin-muted group-hover:text-brand-600 mb-4 transition-colors"></i>
+                            <h3 class="text-2xl md:text-3xl font-sans font-bold text-skin-text mb-1">Optimized</h3>
+                            <p class="font-mono text-xs text-skin-muted uppercase tracking-widest">Cognitive Load</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SERVICES SECTION -->
+        <section id="section-services" class="page-section">
+            <div class="py-24 bg-skin-base relative border-t border-skin-border transition-colors duration-500">
+                <div class="max-w-7xl mx-auto px-6 relative z-10">
+                    <div class="mb-16 flex flex-col md:flex-row justify-between items-end gap-6">
+                        <div>
+                            <h2 class="font-sans font-bold text-4xl text-skin-text mb-4">Core Capabilities</h2>
+                            <p class="font-mono text-skin-muted max-w-2xl">Precision engineering for the enterprise.</p>
+                        </div>
+                        <div class="h-px bg-skin-border flex-grow mb-4 opacity-50 hidden md:block"></div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-px bg-skin-border border border-skin-border">
+                        <!-- Service 1 -->
+                        <div class="group p-10 bg-skin-surface hover:bg-skin-surface-hover transition-all duration-300 relative">
+                            <div class="flex justify-between items-start mb-6">
+                                <i data-lucide="cpu" class="w-10 h-10 text-brand-600" stroke-width="1.5"></i>
+                                <span class="font-mono text-xs text-skin-muted group-hover:text-brand-600 transition-colors">01</span>
+                            </div>
+                            <h3 class="font-sans font-bold text-2xl text-skin-text mb-4 group-hover:text-brand-600 transition-colors">Cognitive Architecture</h3>
+                            <p class="text-skin-muted mb-8 leading-relaxed font-light font-mono text-sm">Design and implementation of RAG pipelines, Vector Databases, and LLM fine-tuning specific to your enterprise data topology.</p>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="text-xs font-mono px-2 py-1 bg-skin-base text-skin-muted border border-skin-border uppercase tracking-wider">RAG</span>
+                                <span class="text-xs font-mono px-2 py-1 bg-skin-base text-skin-muted border border-skin-border uppercase tracking-wider">Python</span>
+                            </div>
+                        </div>
+                        <!-- Service 2 -->
+                        <div class="group p-10 bg-skin-surface hover:bg-skin-surface-hover transition-all duration-300 relative">
+                            <div class="flex justify-between items-start mb-6">
+                                <i data-lucide="box" class="w-10 h-10 text-brand-600" stroke-width="1.5"></i>
+                                <span class="font-mono text-xs text-skin-muted group-hover:text-brand-600 transition-colors">02</span>
+                            </div>
+                            <h3 class="font-sans font-bold text-2xl text-skin-text mb-4 group-hover:text-brand-600 transition-colors">Legacy Modernization</h3>
+                            <p class="text-skin-muted mb-8 leading-relaxed font-light font-mono text-sm">Deconstructing monoliths. We refactor debt-heavy Cobol and Java systems into agile, AI-ready microservices.</p>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="text-xs font-mono px-2 py-1 bg-skin-base text-skin-muted border border-skin-border uppercase tracking-wider">Go</span>
+                                <span class="text-xs font-mono px-2 py-1 bg-skin-base text-skin-muted border border-skin-border uppercase tracking-wider">Rust</span>
+                            </div>
+                        </div>
+                         <!-- Service 3 -->
+                        <div class="group p-10 bg-skin-surface hover:bg-skin-surface-hover transition-all duration-300 relative">
+                            <div class="flex justify-between items-start mb-6">
+                                <i data-lucide="workflow" class="w-10 h-10 text-brand-600" stroke-width="1.5"></i>
+                                <span class="font-mono text-xs text-skin-muted group-hover:text-brand-600 transition-colors">03</span>
+                            </div>
+                            <h3 class="font-sans font-bold text-2xl text-skin-text mb-4 group-hover:text-brand-600 transition-colors">Strategic Alignment</h3>
+                            <p class="text-skin-muted mb-8 leading-relaxed font-light font-mono text-sm">Identifying the mismatch between business intent and technical reality. We provide the roadmap for your digital transformation.</p>
+                             <div class="flex flex-wrap gap-2">
+                                <span class="text-xs font-mono px-2 py-1 bg-skin-base text-skin-muted border border-skin-border uppercase tracking-wider">Consulting</span>
+                                <span class="text-xs font-mono px-2 py-1 bg-skin-base text-skin-muted border border-skin-border uppercase tracking-wider">Audit</span>
+                            </div>
+                        </div>
+                         <!-- Service 4 -->
+                        <div class="group p-10 bg-skin-surface hover:bg-skin-surface-hover transition-all duration-300 relative">
+                            <div class="flex justify-between items-start mb-6">
+                                <i data-lucide="shield-check" class="w-10 h-10 text-brand-600" stroke-width="1.5"></i>
+                                <span class="font-mono text-xs text-skin-muted group-hover:text-brand-600 transition-colors">04</span>
+                            </div>
+                            <h3 class="font-sans font-bold text-2xl text-skin-text mb-4 group-hover:text-brand-600 transition-colors">Sovereign Infrastructure</h3>
+                            <p class="text-skin-muted mb-8 leading-relaxed font-light font-mono text-sm">On-premise and hybrid cloud deployments for data that cannot leave your perimeter. Security first, always.</p>
+                             <div class="flex flex-wrap gap-2">
+                                <span class="text-xs font-mono px-2 py-1 bg-skin-base text-skin-muted border border-skin-border uppercase tracking-wider">Kubernetes</span>
+                                <span class="text-xs font-mono px-2 py-1 bg-skin-base text-skin-muted border border-skin-border uppercase tracking-wider">SecOps</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- WORK SECTION -->
+        <section id="section-work" class="page-section">
+            <div class="py-24 bg-skin-surface border-t border-skin-border transition-colors duration-500">
+                <div class="max-w-7xl mx-auto px-6">
+                    <div class="mb-20">
+                        <h2 class="font-sans font-bold text-4xl text-skin-text mb-4">Selected Works</h2>
+                        <p className="font-mono text-skin-muted max-w-xl">Driving value where it matters most.</p>
+                    </div>
+
+                    <div class="flex flex-col gap-24">
+                        <!-- Project 1 -->
+                        <div class="flex flex-col md:flex-row gap-8 md:gap-16 group">
+                            <div class="w-full md:w-3/5 relative overflow-hidden bg-skin-base aspect-[16/9]">
+                                <div class="absolute inset-0 bg-brand-900/10 group-hover:bg-transparent transition-colors z-10 pointer-events-none"></div>
+                                <div class="absolute top-0 left-0 w-full h-px bg-brand-600/20 z-20"></div>
+                                <div class="absolute bottom-0 right-0 w-full h-px bg-brand-600/20 z-20"></div>
+                                <img src="https://picsum.photos/seed/finance/800/600?grayscale" alt="Sentient Ledger" class="w-full h-full object-cover filter grayscale sepia-[.2] contrast-125 group-hover:grayscale-0 transition-all duration-700 ease-out">
+                            </div>
+                            <div class="w-full md:w-2/5 flex flex-col justify-center">
+                                <div class="font-mono text-brand-600 text-xs tracking-widest uppercase mb-4 pl-4 border-l-2 border-brand-600">Global Apex Bank</div>
+                                <h3 class="font-sans font-bold text-4xl text-skin-text mb-6 group-hover:text-brand-600 transition-colors cursor-pointer flex items-center gap-3">
+                                    Sentient Ledger <i data-lucide="arrow-up-right" class="w-6 h-6 opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0 text-brand-600"></i>
+                                </h3>
+                                <p class="text-skin-muted text-lg mb-8 leading-relaxed font-light">A real-time fraud detection system processing $4B daily. Utilizes unsupervised learning to detect anomalies in SWIFT transactions with 99.8% accuracy.</p>
+                                <div class="flex flex-wrap gap-3">
+                                    <span class="font-mono text-xs text-skin-muted px-3 py-1 border border-skin-border rounded-full bg-skin-base">Python</span>
+                                    <span class="font-mono text-xs text-skin-muted px-3 py-1 border border-skin-border rounded-full bg-skin-base">Kafka</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Project 2 -->
+                        <div class="flex flex-col md:flex-row-reverse gap-8 md:gap-16 group">
+                            <div class="w-full md:w-3/5 relative overflow-hidden bg-skin-base aspect-[16/9]">
+                                <div class="absolute inset-0 bg-brand-900/10 group-hover:bg-transparent transition-colors z-10 pointer-events-none"></div>
+                                <div class="absolute top-0 left-0 w-full h-px bg-brand-600/20 z-20"></div>
+                                <div class="absolute bottom-0 right-0 w-full h-px bg-brand-600/20 z-20"></div>
+                                <img src="https://picsum.photos/seed/med/800/600?grayscale" alt="Aesculapius" class="w-full h-full object-cover filter grayscale sepia-[.2] contrast-125 group-hover:grayscale-0 transition-all duration-700 ease-out">
+                            </div>
+                            <div class="w-full md:w-2/5 flex flex-col justify-center">
+                                <div class="font-mono text-brand-600 text-xs tracking-widest uppercase mb-4 pl-4 border-l-2 border-brand-600">MediCore Systems</div>
+                                <h3 class="font-sans font-bold text-4xl text-skin-text mb-6 group-hover:text-brand-600 transition-colors cursor-pointer flex items-center gap-3">
+                                    Project Aesculapius <i data-lucide="arrow-up-right" class="w-6 h-6 opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0 text-brand-600"></i>
+                                </h3>
+                                <p class="text-skin-muted text-lg mb-8 leading-relaxed font-light">Private LLM deployment for analyzing patient history and suggesting diagnostic pathways. Fully HIPAA compliant and air-gapped.</p>
+                                <div class="flex flex-wrap gap-3">
+                                    <span class="font-mono text-xs text-skin-muted px-3 py-1 border border-skin-border rounded-full bg-skin-base">Llama 3</span>
+                                    <span class="font-mono text-xs text-skin-muted px-3 py-1 border border-skin-border rounded-full bg-skin-base">Go</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- THE ARCHITECT SECTION -->
+        <section id="section-architect" class="page-section">
+            <div class="py-24 min-h-screen bg-skin-base flex flex-col items-center border-t border-skin-border transition-colors duration-500">
+              <div class="max-w-4xl w-full px-4 flex-grow flex flex-col">
+                
+                <div class="mb-8 flex items-end gap-4">
+                  <div class="p-4 bg-skin-surface border border-skin-border">
+                    <i data-lucide="cpu" class="w-8 h-8 text-brand-600"></i>
+                  </div>
+                  <div>
+                     <h2 class="font-sans font-bold text-3xl text-skin-text">The Architect</h2>
+                     <div class="flex items-center gap-2 mt-1">
+                        <span class="relative flex h-2 w-2">
+                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                          <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                        </span>
+                        <p class="font-mono text-skin-muted text-xs uppercase tracking-widest">System Online / Gemini 2.5 Flash</p>
+                     </div>
+                  </div>
+                </div>
+
+                <div class="flex-grow bg-skin-surface border border-skin-border shadow-2xl flex flex-col overflow-hidden max-h-[600px] h-[600px] relative rounded-sm">
+                   <div class="absolute inset-0 bg-[linear-gradient(rgba(59,130,246,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.03)_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none"></div>
+                  
+                  <div id="chat-messages" class="flex-grow overflow-y-auto p-6 space-y-6 scrollbar-thin scrollbar-thumb-skin-border scrollbar-track-skin-surface relative z-10">
+                     <!-- Messages injected here -->
+                  </div>
+                  
+                  <div id="chat-loading" class="hidden px-6 pb-4">
+                      <div class="flex gap-4">
+                         <div class="flex-shrink-0 w-8 h-8 flex items-center justify-center border border-brand-600 bg-brand-600/10 text-brand-600">
+                          <i data-lucide="activity" class="w-4 h-4"></i>
+                        </div>
+                        <div class="p-4 font-mono text-xs text-brand-600 animate-pulse">
+                          PROCESSING_REQUEST...
+                        </div>
+                      </div>
+                  </div>
+
+                  <div class="p-4 bg-skin-surface border-t border-skin-border z-30">
+                    <div class="flex gap-2">
+                      <input
+                        type="text"
+                        id="chat-input"
+                        placeholder="Query the system..."
+                        class="flex-grow bg-skin-base border border-skin-border p-4 text-skin-text font-mono text-sm focus:outline-none focus:border-brand-600 focus:ring-1 focus:ring-brand-600 placeholder-skin-muted transition-all"
+                      />
+                      <button onclick="handleChatSend()" class="w-16 inline-flex items-center justify-center bg-brand-600 text-white hover:bg-brand-500 border border-transparent transition-all h-auto">
+                        <i data-lucide="send" class="w-4 h-4"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </section>
+
+        <!-- CONTACT SECTION -->
+        <section id="section-contact" class="page-section">
+             <div class="py-24 bg-skin-surface border-t border-skin-border transition-colors duration-500">
+                <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-16">
+                    <div>
+                        <h2 class="font-sans font-bold text-5xl text-skin-text mb-8">Start the Conversation</h2>
+                        <p class="font-mono text-skin-muted mb-12 text-lg">Let's discuss how CodeMismatch can align your technical reality with your business vision.</p>
+                        
+                        <div class="space-y-8">
+                             <div class="flex items-center gap-4 group">
+                                <div class="w-12 h-12 flex items-center justify-center bg-skin-base border border-skin-border text-brand-600 group-hover:border-brand-600 transition-colors">
+                                    <i data-lucide="mail"></i>
+                                </div>
+                                <div>
+                                    <p class="font-mono text-xs text-skin-muted uppercase">Inquiries</p>
+                                    <p class="text-skin-text text-lg">partnerships@codemismatch.com</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4 group">
+                                <div class="w-12 h-12 flex items-center justify-center bg-skin-base border border-skin-border text-brand-600 group-hover:border-brand-600 transition-colors">
+                                    <i data-lucide="map-pin"></i>
+                                </div>
+                                <div>
+                                    <p class="font-mono text-xs text-skin-muted uppercase">HQ</p>
+                                    <p class="text-skin-text text-lg">New York / London / Singapore</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form class="bg-skin-base p-8 border border-skin-border" onsubmit="event.preventDefault(); alert('Request transmitted to The Architect.');">
+                        <div class="space-y-6">
+                            <div>
+                                <label class="block font-mono text-xs text-brand-600 uppercase mb-2">Full Name</label>
+                                <input type="text" class="w-full bg-skin-surface border border-skin-border p-3 text-skin-text focus:outline-none focus:border-brand-600 transition-colors" placeholder="John Doe">
+                            </div>
+                            <div>
+                                <label class="block font-mono text-xs text-brand-600 uppercase mb-2">Work Email</label>
+                                <input type="email" class="w-full bg-skin-surface border border-skin-border p-3 text-skin-text focus:outline-none focus:border-brand-600 transition-colors" placeholder="john@company.com">
+                            </div>
+                            <div>
+                                <label class="block font-mono text-xs text-brand-600 uppercase mb-2">Challenge</label>
+                                <textarea rows="4" class="w-full bg-skin-surface border border-skin-border p-3 text-skin-text focus:outline-none focus:border-brand-600 transition-colors" placeholder="Describe the mismatch..."></textarea>
+                            </div>
+                            <button class="inline-flex items-center justify-center font-mono font-medium tracking-wide transition-all duration-200 focus:outline-none uppercase bg-brand-600 text-white hover:bg-brand-500 border border-transparent shadow-[0_0_15px_rgba(37,99,235,0.3)] w-full h-12 text-sm">Submit Request</button>
+                        </div>
+                    </form>
+                </div>
+             </div>
+        </section>
+
+        <!-- PLACEHOLDER SECTION (Open Source / Blog) -->
+        <section id="section-placeholder" class="page-section">
+            <div class="py-32 flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
+                <i data-lucide="construction" class="w-16 h-16 text-brand-600 mb-6 animate-pulse"></i>
+                <h2 class="text-3xl font-bold text-skin-text mb-2 font-sans" id="placeholder-title">Under Construction</h2>
+                <p class="text-skin-muted font-mono">This sector is currently under architectural development.</p>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-skin-surface border-t border-skin-border py-12 transition-colors duration-500">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="cursor-pointer flex items-center tracking-tighter select-none group scale-90 origin-left" onclick="navigateTo('home')">
+                <span class="font-sans font-light text-2xl text-skin-text group-hover:text-skin-text/80 transition-colors duration-300">Cod</span>
+                <div class="mx-[1px] relative flex items-center justify-center h-6 w-5 transform translate-y-[1px]">
+                    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full animate-spectrum transition-colors duration-300">
+                        <path d="M2 6H18" stroke="currentColor" stroke-width="2" stroke-linecap="square" />
+                        <path d="M2 10H18" stroke="currentColor" stroke-width="2" stroke-linecap="square" />
+                        <path d="M2 14H18" stroke="currentColor" stroke-width="2" stroke-linecap="square" />
+                        <path d="M12 3L8 17" stroke="currentColor" stroke-width="2" stroke-linecap="square" />
+                    </svg>
+                </div>
+                <span class="font-sans font-light text-2xl text-skin-text group-hover:text-skin-text/80 transition-colors duration-300">mismatch</span>
+            </div>
+            
+            <div class="font-mono text-xs text-skin-muted text-center md:text-right">
+                <p>© 2024 CodeMismatch Consulting. All rights reserved.</p>
+                <p class="mt-1">Architecting the future of enterprise intelligence.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Theme Control -->
+    <div class="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-4">
+        <div id="theme-panel" class="hidden bg-skin-surface border border-skin-border p-5 rounded-lg shadow-2xl w-72 animate-fade-in backdrop-blur-md">
+            <!-- Header -->
+            <div class="flex items-center justify-between mb-4 border-b border-skin-border pb-3">
+                <span class="font-mono text-xs font-bold text-skin-muted uppercase tracking-widest">System Control</span>
+                <i data-lucide="info" class="w-3.5 h-3.5 text-skin-muted"></i>
+            </div>
+            
+            <!-- Themes -->
+            <div class="mb-6">
+                <label class="block font-mono text-[10px] font-bold text-skin-muted uppercase mb-2">Environment</label>
+                <div class="space-y-1">
+                    <button onclick="setTheme('void')" class="w-full text-left px-3 py-2 rounded font-mono text-xs transition-all flex items-center justify-between group hover:bg-skin-surface-hover text-skin-text" id="btn-theme-void">
+                        <span>Void</span><span class="text-[9px] uppercase opacity-70 text-skin-muted">Dark</span>
+                    </button>
+                    <button onclick="setTheme('azure')" class="w-full text-left px-3 py-2 rounded font-mono text-xs transition-all flex items-center justify-between group hover:bg-skin-surface-hover text-skin-text" id="btn-theme-azure">
+                        <span>Azure Day</span><span class="text-[9px] uppercase opacity-70 text-skin-muted">Light Gradient</span>
+                    </button>
+                    <button onclick="setTheme('paper')" class="w-full text-left px-3 py-2 rounded font-mono text-xs transition-all flex items-center justify-between group hover:bg-skin-surface-hover text-skin-text" id="btn-theme-paper">
+                        <span>Paper</span><span class="text-[9px] uppercase opacity-70 text-skin-muted">Clean Light</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Palettes -->
+            <div class="mb-4">
+                 <div class="flex items-center justify-between mb-2">
+                     <label class="block font-mono text-[10px] font-bold text-skin-muted uppercase">Theme Palettes</label>
+                     <button onclick="resetColors()" class="text-[10px] text-skin-muted hover:text-brand-600 flex items-center gap-1 transition-colors">
+                         <i data-lucide="rotate-ccw" class="w-3 h-3"></i> Reset
+                     </button>
+                 </div>
+                 <div class="space-y-3">
+                     <!-- Brand Color -->
+                     <div class="flex items-center gap-3 bg-skin-base p-2 rounded border border-skin-border">
+                        <div class="relative w-8 h-8 rounded-full overflow-hidden shadow-sm border border-skin-border flex-shrink-0 cursor-pointer">
+                            <input type="color" id="brand-color-picker" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[200%] h-[200%] p-0 m-0 border-0 cursor-pointer">
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="font-mono text-xs text-skin-text uppercase" id="brand-color-label">#00608a</span>
+                            <span class="font-mono text-[9px] text-skin-muted">Accents & Buttons</span>
+                        </div>
+                     </div>
+                     <!-- Ambient Color -->
+                     <div class="flex items-center gap-3 bg-skin-base p-2 rounded border border-skin-border">
+                        <div class="relative w-8 h-8 rounded-full overflow-hidden shadow-sm border border-skin-border flex-shrink-0 cursor-pointer">
+                            <input type="color" id="ambient-color-picker" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[200%] h-[200%] p-0 m-0 border-0 cursor-pointer">
+                        </div>
+                         <div class="flex flex-col">
+                            <span class="font-mono text-xs text-skin-text uppercase" id="ambient-color-label">#0f172a</span>
+                            <span class="font-mono text-[9px] text-skin-muted">Background Gradient</span>
+                        </div>
+                     </div>
+                 </div>
+            </div>
+
+            <!-- Wave Controls -->
+            <div class="mb-4 pt-4 border-t border-skin-border">
+                 <div class="flex items-center justify-between mb-2">
+                     <label class="block font-mono text-[10px] font-bold text-skin-muted uppercase">Wave Dynamics</label>
+                     <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="wave-toggle" class="sr-only peer" checked>
+                        <div class="w-7 h-4 bg-skin-base border border-skin-border peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-skin-muted after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-brand-600 peer-checked:after:bg-white"></div>
+                     </label>
+                 </div>
+                 <div class="space-y-3 px-1">
+                     <!-- Speed -->
+                     <div>
+                        <div class="flex justify-between text-[9px] font-mono text-skin-muted mb-1">
+                            <span>Speed</span>
+                            <span id="wave-speed-val">0.896x</span>
+                        </div>
+                        <input type="range" id="wave-speed" min="0" max="5" step="0.001" value="0.896" class="w-full h-1 rounded-lg appearance-none cursor-pointer accent-brand-600" style="background-color: var(--slider-bg, var(--skin-base))">
+                     </div>
+                     <!-- Frequency -->
+                     <div>
+                        <div class="flex justify-between text-[9px] font-mono text-skin-muted mb-1">
+                            <span>Frequency</span>
+                            <span id="wave-freq-val">0.198x</span>
+                        </div>
+                        <input type="range" id="wave-freq" min="0.1" max="3" step="0.001" value="0.198" class="w-full h-1 rounded-lg appearance-none cursor-pointer accent-brand-600" style="background-color: var(--slider-bg, var(--skin-base))">
+                     </div>
+                     <!-- Amplitude -->
+                     <div>
+                        <div class="flex justify-between text-[9px] font-mono text-skin-muted mb-1">
+                            <span>Amplitude</span>
+                            <span id="wave-amp-val">1.356x</span>
+                        </div>
+                        <input type="range" id="wave-amp" min="0" max="3" step="0.001" value="1.356" class="w-full h-1 rounded-lg appearance-none cursor-pointer accent-brand-600" style="background-color: var(--slider-bg, var(--skin-base))">
+                     </div>
+                     <!-- Decay -->
+                     <div>
+                        <div class="flex justify-between text-[9px] font-mono text-skin-muted mb-1">
+                            <span>Decay</span>
+                            <span id="wave-steepness-val">1.400</span>
+                        </div>
+                        <input type="range" id="wave-steepness" min="0.1" max="10" step="0.1" value="1.4" class="w-full h-1 rounded-lg appearance-none cursor-pointer accent-brand-600" style="background-color: var(--slider-bg, var(--skin-base))">
+                     </div>
+                 </div>
+            </div>
+            
+            <div class="mt-4 pt-3 border-t border-skin-border text-[9px] text-skin-muted font-mono">
+                Architect Status: ONLINE <br> Version: 3.1.0 (HTML5)
+            </div>
+        </div>
+        
+        <button onclick="toggleThemePanel()" class="w-12 h-12 rounded-full bg-brand-600 text-white flex items-center justify-center shadow-[0_4px_14px_0_rgba(var(--brand-600),0.39)] hover:bg-brand-500 hover:scale-105 transition-all border border-brand-400">
+            <i data-lucide="palette" class="w-5 h-5"></i>
+        </button>
+    </div>
+
+    <!-- MAIN SCRIPT -->
+    <script type="module">
+        import { GoogleGenAI } from "https://esm.sh/@google/genai";
+
+        /* --- CONFIG --- */
+        const API_KEY = ''; // ENTER YOUR GEMINI API KEY HERE
+
+        /* --- STATE --- */
+        let state = {
+            currentPage: 'home',
+            currentTheme: 'azure',
+            brandColor: '#00608a',
+            ambientColor: '#0f172a',
+            messages: [
+              {
+                id: 'init',
+                role: 'model',
+                text: "I am The Architect. I serve as the cognitive interface for CodeMismatch. How may I assist with your enterprise strategy?"
+              }
+            ]
+        };
+
+        const THEMES = {
+            void: {
+                variables: {
+                    '--bg-base': 'rgb(var(--ambient-950))',
+                    '--bg-surface': 'rgb(var(--ambient-900))',
+                    '--bg-surface-hover': 'rgb(var(--ambient-800))',
+                    '--text-main': '#f8fafc',
+                    '--text-muted': '#94a3b8',
+                    '--border-color': 'rgba(255,255,255,0.1)',
+                    '--slider-bg': '#ffffff' // White slider for Void (Dark)
+                },
+                gradientClass: 'bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-ambient-900 via-ambient-950 to-black',
+                isDark: true,
+                brand: '#6600ff', // Void Default
+                ambient: '#000000'
+            },
+            azure: {
+                variables: {
+                    '--bg-base': '#f0f9ff',
+                    '--bg-surface': '#ffffff',
+                    '--bg-surface-hover': '#e0f2fe',
+                    '--text-main': '#0f172a',
+                    '--text-muted': '#64748b',
+                    '--border-color': '#e2e8f0',
+                    '--slider-bg': '#e2e8f0' // Visible gray for Azure (Light)
+                },
+                gradientClass: 'bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-white via-ambient-50 to-ambient-100',
+                isDark: false,
+                brand: '#3b82f6', // Azure Default
+                ambient: '#f0f9ff'
+            },
+            paper: {
+                variables: {
+                    '--bg-base': '#ffffff',
+                    '--bg-surface': '#f8fafc',
+                    '--bg-surface-hover': '#f1f5f9',
+                    '--text-main': '#1e293b',
+                    '--text-muted': '#64748b',
+                    '--border-color': '#e2e8f0',
+                    '--slider-bg': 'rgb(var(--skin-base))' // Default skin base for Paper (Light)
+                },
+                gradientClass: 'bg-slate-50',
+                isDark: false,
+                brand: '#00608a', // Paper Default
+                ambient: '#ffffff'
+            }
+        };
+
+        /* --- INIT --- */
+        window.onload = function() {
+            lucide.createIcons();
+            setTheme(state.currentTheme);
+            resetColors(); // Apply defaults
+            setupWaveAnimation();
+            navigateTo('home');
+            renderChat();
+            
+            // Input listeners
+            document.getElementById('brand-color-picker').addEventListener('input', (e) => updateBrandColor(e.target.value));
+            document.getElementById('ambient-color-picker').addEventListener('input', (e) => updateAmbientColor(e.target.value));
+            
+            // Chat Input Listener
+             document.getElementById('chat-input').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleChatSend();
+                }
+            });
+            
+            // Handle browser back/forward
+            window.addEventListener('popstate', (e) => {
+                if (e.state && e.state.page) {
+                    navigateToImpl(e.state.page, false);
+                }
+            });
+            
+            // Handle initial hash from URL
+            const hash = window.location.hash.slice(1);
+            if (hash) {
+                navigateToImpl(hash, false);
+            }
+        };
+
+        /* --- CHAT FUNCTIONALITY --- */
+        function scrollToBottom() {
+            const container = document.getElementById('chat-messages');
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function appendMessage(role, text) {
+            const container = document.getElementById('chat-messages');
+            const isModel = role === 'model';
+            
+            const div = document.createElement('div');
+            div.className = `flex gap-4 ${isModel ? 'flex-row' : 'flex-row-reverse'} animate-fade-in`;
+            
+            // Note: In a real app we would sanitize 'text' to prevent XSS
+            div.innerHTML = `
+                <div class="flex-shrink-0 w-8 h-8 flex items-center justify-center border ${isModel ? 'border-brand-600 bg-brand-600/10 text-brand-600' : 'border-skin-border bg-skin-base text-skin-muted'}">
+                    <i data-lucide="${isModel ? 'activity' : 'user'}" class="w-4 h-4"></i>
+                </div>
+                <div class="max-w-[85%] font-mono text-sm p-4 border shadow-sm ${isModel ? 'border-brand-600/30 bg-skin-base text-skin-text' : 'border-skin-border bg-skin-surface-hover text-skin-text'}">
+                    ${text.replace(/\n/g, '<br>')}
+                </div>
+            `;
+            container.appendChild(div);
+            lucide.createIcons();
+            scrollToBottom();
+        }
+
+        function renderChat() {
+            const container = document.getElementById('chat-messages');
+            container.innerHTML = '';
+            state.messages.forEach(msg => appendMessage(msg.role, msg.text));
+        }
+
+        window.handleChatSend = async function() {
+            const inputEl = document.getElementById('chat-input');
+            const text = inputEl.value.trim();
+            if (!text) return;
+            
+            // Add User Message
+            state.messages.push({ id: Date.now(), role: 'user', text });
+            appendMessage('user', text);
+            inputEl.value = '';
+            
+            // Show Loading
+            document.getElementById('chat-loading').classList.remove('hidden');
+            scrollToBottom();
+            
+            try {
+                // Call Gemini
+                const history = state.messages.map(m => ({ role: m.role, text: m.text }));
+                const responseText = await generateOracleResponse(history, text);
+                
+                // Add Model Message
+                state.messages.push({ id: Date.now()+1, role: 'model', text: responseText });
+                appendMessage('model', responseText);
+            } catch (err) {
+                console.error(err);
+                appendMessage('model', "Error: Signal lost. Please verify API Key.");
+            } finally {
+                document.getElementById('chat-loading').classList.add('hidden');
+            }
+        }
+        
+        async function generateOracleResponse(history, newMessage) {
+          if (!API_KEY) {
+            return "Error: Uplink severed. (API_KEY missing in source code)";
+          }
+
+          try {
+            const ai = new GoogleGenAI({ apiKey: API_KEY });
+            const model = 'gemini-2.5-flash';
+            
+            const chat = ai.chats.create({
+              model: model,
+              config: {
+                systemInstruction: "You are 'The Architect', the sovereign AI consultant for CodeMismatch. We combine IBM-style enterprise architecture with elite hacker aesthetics. Your tone is sophisticated, professional, concise, and slightly detached (like a supercomputer). Domains: Cognitive Enterprise Architecture, Legacy Modernization, Sovereign Cloud. Use terms like 'symphony', 'orchestration', 'latency', 'decision units'.",
+              },
+              history: history.slice(0, -1).map(h => ({ // Exclude the very last user message we just added
+                role: h.role,
+                parts: [{ text: h.text }]
+              }))
+            });
+
+            const result = await chat.sendMessage({
+              message: newMessage
+            });
+
+            return result.text || "Computing... Signal unstable.";
+
+          } catch (error) {
+            console.error("Gemini Error:", error);
+            return "Critical Error: Logic gate failure. Re-initializing.";
+          }
+        };
+
+        /* --- NAVIGATION --- */
+        function navigateToImpl(pageId, pushState) {
+            state.currentPage = pageId;
+            
+            // Update URL and browser history
+            if (pushState !== false) {
+                window.history.pushState({ page: pageId }, '', '#' + pageId);
+            }
+            
+            // Reset active states
+            document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('text-brand-600', 'font-bold'));
+            
+            // Highlight nav
+            const activeLink = document.querySelector(`.nav-link[data-page="${pageId}"]`);
+            if(activeLink) activeLink.classList.add('text-brand-600', 'font-bold');
+
+            // Show sections based on logic
+            if (pageId === 'home') {
+                document.getElementById('section-hero').classList.add('active');
+                document.getElementById('section-services').classList.add('active');
+                document.getElementById('section-work').classList.add('active');
+            } else if (pageId === 'services') {
+                document.getElementById('section-services').classList.add('active');
+            } else if (pageId === 'work') {
+                document.getElementById('section-work').classList.add('active');
+            } else if (pageId === 'contact') {
+                document.getElementById('section-contact').classList.add('active');
+            } else if (pageId === 'architect') {
+                 document.getElementById('section-architect').classList.add('active');
+                 setTimeout(scrollToBottom, 100);
+            } else if (pageId === 'open_source') {
+                 document.getElementById('placeholder-title').innerText = "Open Source Initiatives";
+                 document.getElementById('section-placeholder').classList.add('active');
+            } else if (pageId === 'blog') {
+                 document.getElementById('placeholder-title').innerText = "Engineering Blog";
+                 document.getElementById('section-placeholder').classList.add('active');
+            }
+            
+            window.scrollTo(0,0);
+        }
+        
+        window.navigateTo = function(pageId) {
+            navigateToImpl(pageId, true);
+        };
+
+        window.toggleMobileMenu = function() {
+            const menu = document.getElementById('mobile-menu');
+            const icon = document.getElementById('mobile-menu-icon');
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                menu.classList.add('flex');
+            } else {
+                menu.classList.add('hidden');
+                menu.classList.remove('flex');
+            }
+        };
+
+        window.toggleMobileProducts = function() {
+            const list = document.getElementById('mobile-products-list');
+            const icon = document.getElementById('mobile-product-icon');
+            if (list.classList.contains('hidden')) {
+                list.classList.remove('hidden');
+                icon.style.transform = 'rotate(180deg)';
+            } else {
+                list.classList.add('hidden');
+                icon.style.transform = 'rotate(0deg)';
+            }
+        };
+
+        /* --- THEMING --- */
+        window.setTheme = function(themeKey) {
+            state.currentTheme = themeKey;
+            const theme = THEMES[themeKey];
+            const root = document.documentElement;
+            
+            // Set CSS Variables
+            Object.entries(theme.variables).forEach(([key, value]) => {
+                root.style.setProperty(key, value);
+            });
+            
+            // Set Body Gradient Class
+            const body = document.getElementById('app-body');
+            body.className = `min-h-screen transition-colors duration-500 selection:bg-brand-500 selection:text-white ${theme.gradientClass}`;
+            
+            // Update State & Color Pickers
+            state.brandColor = theme.brand;
+            state.ambientColor = theme.ambient;
+            
+            const brandPicker = document.getElementById('brand-color-picker');
+            const brandLabel = document.getElementById('brand-color-label');
+            const ambientPicker = document.getElementById('ambient-color-picker');
+            const ambientLabel = document.getElementById('ambient-color-label');
+            
+            if (brandPicker) brandPicker.value = theme.brand;
+            if (brandLabel) brandLabel.innerText = theme.brand;
+            if (ambientPicker) ambientPicker.value = theme.ambient;
+            if (ambientLabel) ambientLabel.innerText = theme.ambient;
+            
+            // Generate and Apply Palettes
+            const brandPalette = generatePalette(theme.brand, 'brand');
+            Object.entries(brandPalette).forEach(([key, value]) => root.style.setProperty(key, value));
+            
+            const ambientPalette = generatePalette(theme.ambient, 'ambient');
+            Object.entries(ambientPalette).forEach(([key, value]) => root.style.setProperty(key, value));
+            
+            // Update Toggle Button Styles
+            ['void', 'azure', 'paper'].forEach(k => {
+                const btn = document.getElementById(`btn-theme-${k}`);
+                if (k === themeKey) {
+                    btn.className = "w-full text-left px-3 py-2 rounded font-mono text-xs transition-all flex items-center justify-between group bg-brand-600 text-white shadow-md shadow-brand-600/20";
+                    btn.querySelector('span:last-child').className = "text-[9px] uppercase opacity-70 text-white";
+                } else {
+                    btn.className = "w-full text-left px-3 py-2 rounded font-mono text-xs transition-all flex items-center justify-between group hover:bg-skin-surface-hover text-skin-text";
+                    btn.querySelector('span:last-child').className = "text-[9px] uppercase opacity-70 text-skin-muted";
+                }
+            });
+        };
+
+
+
+        window.toggleThemePanel = function() {
+            const panel = document.getElementById('theme-panel');
+            panel.classList.toggle('hidden');
+        };
+
+        /* --- COLOR GENERATION --- */
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : { r: 0, g: 0, b: 0 };
+        }
+
+        function mixColors(c1, c2, weight) {
+            return {
+                r: Math.round(c1.r * (1 - weight) + c2.r * weight),
+                g: Math.round(c1.g * (1 - weight) + c2.g * weight),
+                b: Math.round(c1.b * (1 - weight) + c2.b * weight)
+            };
+        }
+
+        function generatePalette(baseHex, prefix) {
+            const base = hexToRgb(baseHex);
+            const white = { r: 255, g: 255, b: 255 };
+            const black = { r: 0, g: 0, b: 0 };
+            
+            const mixWithBase = (color, weight) => {
+                const mixed = mixColors(color, base, weight);
+                return `${mixed.r} ${mixed.g} ${mixed.b}`;
+            };
+
+            const palette = {};
+            [0.05, 0.1, 0.25, 0.45, 0.70, 0.85].forEach((w, i) => {
+                const levels = [50, 100, 200, 300, 400, 500];
+                palette[`--${prefix}-${levels[i]}`] = mixWithBase(white, w);
+            });
+            
+            palette[`--${prefix}-600`] = `${base.r} ${base.g} ${base.b}`;
+            
+            [0.1, 0.3, 0.5, 0.7].forEach((w, i) => {
+                const levels = [700, 800, 900, 950];
+                palette[`--${prefix}-${levels[i]}`] = mixWithBase(black, w);
+            });
+            return palette;
+        }
+
+        window.updateBrandColor = function(hex) {
+            state.brandColor = hex;
+            document.getElementById('brand-color-picker').value = hex;
+            document.getElementById('brand-color-label').innerText = hex;
+            const palette = generatePalette(hex, 'brand');
+            Object.entries(palette).forEach(([key, value]) => document.documentElement.style.setProperty(key, value));
+        }
+
+        window.updateAmbientColor = function(hex) {
+            state.ambientColor = hex;
+            document.getElementById('ambient-color-picker').value = hex;
+            document.getElementById('ambient-color-label').innerText = hex;
+            const palette = generatePalette(hex, 'ambient');
+            Object.entries(palette).forEach(([key, value]) => document.documentElement.style.setProperty(key, value));
+        }
+
+        window.resetColors = function() {
+            const theme = THEMES[state.currentTheme];
+            updateBrandColor(theme.brand);
+            updateAmbientColor(theme.ambient);
+        }
+
+        /* --- WAVE ANIMATION --- */
+        function setupWaveAnimation() {
+            const canvas = document.getElementById('wave-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Controls
+            const toggle = document.getElementById('wave-toggle');
+            const speedInput = document.getElementById('wave-speed');
+            const freqInput = document.getElementById('wave-freq');
+            const ampInput = document.getElementById('wave-amp');
+            const steepnessInput = document.getElementById('wave-steepness');
+            
+            // Update Labels
+            speedInput.addEventListener('input', (e) => document.getElementById('wave-speed-val').innerText = parseFloat(e.target.value).toFixed(3) + 'x');
+            freqInput.addEventListener('input', (e) => document.getElementById('wave-freq-val').innerText = parseFloat(e.target.value).toFixed(3) + 'x');
+            ampInput.addEventListener('input', (e) => document.getElementById('wave-amp-val').innerText = parseFloat(e.target.value).toFixed(3) + 'x');
+            steepnessInput.addEventListener('input', (e) => document.getElementById('wave-steepness-val').innerText = parseFloat(e.target.value).toFixed(3));
+
+            let width, height;
+            
+            function resize() {
+                width = canvas.parentElement.offsetWidth;
+                height = canvas.parentElement.offsetHeight;
+                canvas.width = width * window.devicePixelRatio;
+                canvas.height = height * window.devicePixelRatio;
+                ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            let time = 0;
+
+            function render() {
+                ctx.clearRect(0, 0, width, height);
+                
+                if (!toggle.checked) {
+                    requestAnimationFrame(render);
+                    return;
+                }
+
+                const isDark = THEMES[state.currentTheme].isDark;
+                const baseOpacity = isDark ? 0.9 : 0.6;
+                const yAxis = height / 2;
+                
+                // Get Control Values
+                const speedMult = parseFloat(speedInput.value);
+                const freqMult = parseFloat(freqInput.value);
+                const ampMult = parseFloat(ampInput.value);
+                const steepnessVal = parseFloat(steepnessInput.value);
+
+                const waves = [
+                    // Original Waves (Slow & Wide)
+                    { timeModifier: 1, lineWidth: 2, amplitude: 50, wavelength: 200, gradient: [`rgba(59, 130, 246, ${baseOpacity})`, `rgba(6, 182, 212, ${baseOpacity})`, `rgba(168, 85, 247, ${baseOpacity})`, `rgba(236, 72, 153, ${baseOpacity})`] },
+                    { timeModifier: 0.5, lineWidth: 1.5, amplitude: 140, wavelength: 300, gradient: [`rgba(30, 58, 138, ${baseOpacity * 0.8})`, `rgba(37, 99, 235, ${baseOpacity * 0.8})`, `rgba(79, 70, 229, ${baseOpacity * 0.8})`] },
+                    { timeModifier: 0.7, lineWidth: 1, amplitude: 90, wavelength: 240, gradient: [`rgba(88, 28, 135, ${baseOpacity * 0.7})`, `rgba(124, 58, 237, ${baseOpacity * 0.7})`, `rgba(30, 64, 175, ${baseOpacity * 0.7})`] },
+                    { timeModifier: 1.1, lineWidth: 0.5, amplitude: 30, wavelength: 120, gradient: [`rgba(59, 130, 246, ${baseOpacity * 0.4})`, `rgba(147, 197, 253, ${baseOpacity * 0.4})`] },
+                    
+                    // Symphony-Inspired Waves (Fast, High Frequency, High Amplitude)
+                    { timeModifier: 2, lineWidth: 1, amplitude: -50, wavelength: 15, gradient: [`rgba(59, 130, 246, ${baseOpacity})`, `rgba(6, 182, 212, ${baseOpacity})`] },
+                    { timeModifier: 1, lineWidth: 2, amplitude: -100, wavelength: 30, gradient: [`rgba(30, 58, 138, ${baseOpacity * 0.8})`, `rgba(37, 99, 235, ${baseOpacity * 0.8})`] },
+                    { timeModifier: 0.5, lineWidth: 1, amplitude: -200, wavelength: 60, gradient: [`rgba(88, 28, 135, ${baseOpacity * 0.7})`, `rgba(124, 58, 237, ${baseOpacity * 0.7})`] },
+                    { timeModifier: 0.25, lineWidth: 3, amplitude: -160, wavelength: 40, gradient: [`rgba(59, 130, 246, ${baseOpacity * 0.6})`, `rgba(147, 197, 253, ${baseOpacity * 0.6})`] },
+                    { timeModifier: 0.35, lineWidth: 2, amplitude: -240, wavelength: 70, gradient: [`rgba(168, 85, 247, ${baseOpacity * 0.5})`, `rgba(236, 72, 153, ${baseOpacity * 0.5})`] }
+                ];
+
+                waves.forEach((wave, index) => {
+                    ctx.beginPath();
+                    ctx.lineWidth = wave.lineWidth;
+                    const gradient = ctx.createLinearGradient(0, 0, width, 0);
+                    wave.gradient.forEach((color, i) => gradient.addColorStop(i / (wave.gradient.length - 1), color));
+                    ctx.strokeStyle = gradient;
+
+                    for (let x = 0; x < width; x += 5) {
+                        // Apply Frequency (wavelength)
+                        const effectiveWavelength = wave.wavelength / freqMult;
+                        const k = (2 * Math.PI) / effectiveWavelength;
+                        
+                        // Apply Amplitude with Spatial Decay (High Right -> Low Left)
+                        const baseAmplitude = wave.amplitude * ampMult;
+                        const decay = Math.pow(x / width, steepnessVal); 
+                        const effectiveAmplitude = baseAmplitude * decay;
+                        
+                        const y = yAxis +
+                            Math.sin(k * x + time * wave.timeModifier) * effectiveAmplitude * Math.sin(time * 0.2 + index) +
+                            Math.cos(x * 0.01 + time) * (effectiveAmplitude * 0.2);
+                        x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+                    }
+                    ctx.stroke();
+                });
+
+                // Apply Speed
+                time += 0.008 * speedMult;
+                requestAnimationFrame(render);
+            }
+            render();
+        }
+
+    </script>
+    <script src="/themes/codemismatch/javascripts/custom.js"></script>
+</body>
+</html>

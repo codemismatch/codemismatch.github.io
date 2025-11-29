@@ -1,0 +1,30 @@
+%section.contact-section#contact
+  .section-header
+    .section-badge Contact
+    %h2.section-title Get in Touch
+    %p.section-description We'd love to hear from you. Send us a message and we'll respond as soon as possible.
+  .contact-grid
+    .contact-info
+      %h3{:style => "margin-bottom: 2rem; font-size: 1.5rem; font-weight: 700;"} Contact Information
+      .contact-item
+        %i.fa.fa-map-marker
+        %p
+          A-203 Sakal 24, Near Savita green party plot, behind shreenath bunglows, 
+          Chandkheda, Ahmedabad, Gujarat, India
+      .contact-item
+        %i.fa.fa-phone
+        %p +91 7990233778
+      .contact-item
+        %i.fa.fa-envelope-o
+        %p business@codemismatch.com
+    .contact-form
+      %h3{:style => "margin-bottom: 2rem; font-size: 1.5rem; font-weight: 700;"} Send us a Message
+      %form#contact-form{:action => "https://formspree.io/codemismatch@gmail.com", :method => "post"}
+        .form-group
+          %input#name{:name => "name", :placeholder => "Name", :type => "text", :required => true}/
+        .form-group
+          %input#email{:name => "email", :placeholder => "Email", :type => "email", :required => true}/
+        .form-group
+          %textarea#message{:name => "message", :placeholder => "Message", :rows => "5", :required => true}
+        .form-group
+          %button.form-submit{:type => "submit"} Send Message
