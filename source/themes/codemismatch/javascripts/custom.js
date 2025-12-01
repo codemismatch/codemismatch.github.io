@@ -26,9 +26,9 @@ const CODE_GRADIENT = {
 // State
 let state = {
   currentPage: 'home',
-  currentTheme: 'azure',
-  brandColor: '#00608a',
-  ambientColor: '#0f172a',
+  currentTheme: 'void',
+  brandColor: '#6600ff',
+  ambientColor: '#000000',
   messages: [{
     id: 'init',
     role: 'model',
@@ -307,8 +307,18 @@ function updateAmbientColor(hex) {
 }
 
 function resetColors() {
-  updateBrandColor('#00608a');
-  updateAmbientColor('#0f172a');
+  // Mirror theme defaults from main.js
+  if (state.currentTheme === 'paper') {
+    updateBrandColor('#c800ff');
+    updateAmbientColor('#ffffff');
+  } else if (state.currentTheme === 'void') {
+    updateBrandColor('#6600ff');
+    updateAmbientColor('#000000');
+  } else {
+    // Azure
+    updateBrandColor('#3b82f6');
+    updateAmbientColor('#f0f9ff');
+  }
 }
 
 /* WAVE ANIMATION */
@@ -410,8 +420,8 @@ function setupWaveAnimation() {
     const radius = 15;
     const centerX = 18;
     const centerY = 18;
-    const startDeg = 30;   // lower-left-ish
-    const endDeg = 340;    // lower-right-ish
+    const startDeg = 120;   // approx 7 o'clock
+    const endDeg = 430;     // approx 5 o'clock (120 + 310)
 
     if (clamped <= 0) {
       arcSvg.setAttribute('d', '');
@@ -503,7 +513,7 @@ function setupWaveAnimation() {
     ctx.font = '700 11px "IBM Plex Mono", monospace';
     ctx.textBaseline = 'middle';
 
-    const codePalette = isDark ? CODE_GRADIENT.dark : CODE_GRADIENT.light;
+    const codePalette = isDark ? CODE_GRADIENT.light : CODE_GRADIENT.dark;
     const renderMode = state.wave.renderMode || 'code';
 
     const waves = [
