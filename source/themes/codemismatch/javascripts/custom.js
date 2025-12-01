@@ -1,5 +1,28 @@
 /* CodeMismatch Theme - Optimized JavaScript */
 
+// Wave defaults
+const WAVE_DEFAULTS = {
+  speed: 0.896,
+  freq: 0.198,
+  amp: 1.356,
+  steepness: 1.4
+};
+
+const WAVE_LIMITS = {
+  speed: { min: 0, max: 5 },
+  freq: { min: 0.1, max: 3 },
+  amp: { min: 0, max: 3 },
+  steepness: { min: 0.1, max: 10 }
+};
+
+const CODE_BINARY = ['0', '1'];
+const CODE_HEX = ['0x0F', '0x4F', '0xA1', '0x7E', '0x3C'];
+const CODE_GRADIENT = {
+  // Blue → cyan → indigo → purple → pink (pre‑knob version)
+  light: ['#3b82f6', '#06b6d4', '#6366f1', '#8b5cf6', '#ec4899'],
+  dark: ['#93c5fd', '#67e8f9', '#a5b4fc', '#c4b5fd', '#f9a8d4']
+};
+
 // State
 let state = {
   currentPage: 'home',
@@ -10,7 +33,11 @@ let state = {
     id: 'init',
     role: 'model',
     text: "I am The Architect. I serve as the cognitive interface for CodeMismatch. How may I assist with your enterprise strategy?"
-  }]
+  }],
+  wave: {
+    params: { ...WAVE_DEFAULTS },
+    renderMode: 'code' // 'code' | 'lines'
+  }
 };
 
 // Theme Definitions
@@ -57,7 +84,11 @@ const THEMES = {
 document.addEventListener('DOMContentLoaded', function () {
   if (typeof lucide !== 'undefined') lucide.createIcons();
 
-  setTheme(state.currentTheme);
+  if (window.setTheme) {
+    window.setTheme(state.currentTheme);
+  } else {
+    setTheme(state.currentTheme);
+  }
   resetColors();
   setupWaveAnimation();
 
@@ -180,6 +211,28 @@ function setTheme(themeKey) {
       }
     }
   });
+
+  // Toggle slider layout based on theme
+  const horizontalControls = document.getElementById('wave-controls-horizontal');
+  const verticalControls = document.getElementById('wave-controls-vertical');
+  const knobControls = document.getElementById('wave-controls-knob');
+
+  if (themeKey === 'paper') {
+    // Paper: vertical faders
+    if (horizontalControls) horizontalControls.classList.add('hidden');
+    if (verticalControls) verticalControls.classList.remove('hidden');
+    if (knobControls) knobControls.classList.add('hidden');
+  } else if (themeKey === 'void') {
+    // Void: rotary knobs
+    if (horizontalControls) horizontalControls.classList.add('hidden');
+    if (verticalControls) verticalControls.classList.add('hidden');
+    if (knobControls) knobControls.classList.remove('hidden');
+  } else {
+    // Azure: horizontal sliders
+    if (horizontalControls) horizontalControls.classList.remove('hidden');
+    if (verticalControls) verticalControls.classList.add('hidden');
+    if (knobControls) knobControls.classList.add('hidden');
+  }
 }
 
 function toggleThemePanel() {
@@ -203,6 +256,11 @@ function mixColors(c1, c2, weight) {
     g: Math.round(c1.g * (1 - weight) + c2.g * weight),
     b: Math.round(c1.b * (1 - weight) + c2.b * weight)
   };
+}
+
+function toRgba(hex, alpha) {
+  const { r, g, b } = hexToRgb(hex);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
 function generatePalette(baseHex, prefix) {
@@ -254,30 +312,199 @@ function resetColors() {
 }
 
 /* WAVE ANIMATION */
+function clampWaveParam(key, value) {
+  const limits = WAVE_LIMITS[key];
+  if (!limits) return value;
+  const numeric = parseFloat(value);
+  if (Number.isNaN(numeric)) return limits.min;
+  return Math.min(limits.max, Math.max(limits.min, numeric));
+}
+
 function setupWaveAnimation() {
+  console.log("Initializing Wave Animation...");
   const canvas = document.getElementById('wave-canvas');
-  if (!canvas) return;
+  if (!canvas) {
+    console.error("Wave canvas not found!");
+    return;
+  }
 
   const ctx = canvas.getContext('2d');
   let width, height;
+
+  // Wave state
+  const baseParams = state.wave.params;
 
   function resize() {
     width = canvas.parentElement.offsetWidth;
     height = canvas.parentElement.offsetHeight;
     canvas.width = width * window.devicePixelRatio;
     canvas.height = height * window.devicePixelRatio;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
   }
   window.addEventListener('resize', resize);
   resize();
 
+  // Controls + labels
+  const sliderBindings = {
+    speed: {
+      horizontal: document.getElementById('wave-speed'),
+      vertical: document.getElementById('wave-speed-v'),
+      knob: document.getElementById('wave-speed-knob'),
+      labelH: document.getElementById('wave-speed-val'),
+      labelV: document.getElementById('wave-speed-val-v'),
+      labelK: document.getElementById('wave-speed-val-knob'),
+      formatH: (v) => `${v.toFixed(3)}x`,
+      formatV: (v) => v.toFixed(3),
+      formatK: (v) => `${v.toFixed(3)}x`
+    },
+    freq: {
+      horizontal: document.getElementById('wave-freq'),
+      vertical: document.getElementById('wave-freq-v'),
+      knob: document.getElementById('wave-freq-knob'),
+      labelH: document.getElementById('wave-freq-val'),
+      labelV: document.getElementById('wave-freq-val-v'),
+      labelK: document.getElementById('wave-freq-val-knob'),
+      formatH: (v) => `${v.toFixed(3)}x`,
+      formatV: (v) => v.toFixed(3),
+      formatK: (v) => `${v.toFixed(3)}x`
+    },
+    amp: {
+      horizontal: document.getElementById('wave-amp'),
+      vertical: document.getElementById('wave-amp-v'),
+      knob: document.getElementById('wave-amp-knob'),
+      labelH: document.getElementById('wave-amp-val'),
+      labelV: document.getElementById('wave-amp-val-v'),
+      labelK: document.getElementById('wave-amp-val-knob'),
+      formatH: (v) => `${v.toFixed(3)}x`,
+      formatV: (v) => v.toFixed(3),
+      formatK: (v) => `${v.toFixed(3)}x`
+    },
+    steepness: {
+      horizontal: document.getElementById('wave-steepness'),
+      vertical: document.getElementById('wave-steepness-v'),
+      knob: document.getElementById('wave-steepness-knob'),
+      labelH: document.getElementById('wave-steepness-val'),
+      labelV: document.getElementById('wave-steepness-val-v'),
+      labelK: document.getElementById('wave-steepness-val-knob'),
+      formatH: (v) => v.toFixed(3),
+      formatV: (v) => v.toFixed(2),
+      formatK: (v) => v.toFixed(2)
+    }
+  };
+
+  const updateKnobVisual = (key) => {
+    const meta = sliderBindings[key];
+    if (!meta || !meta.knob) return;
+    const svg = document.querySelector(`svg[data-knob="${key}"]`);
+    if (!svg) return;
+    const arcSvg = svg.querySelector('.knob-arc');
+    const handle = svg.querySelector('.knob-handle');
+    if (!arcSvg) return;
+
+    const limits = WAVE_LIMITS[key];
+    const value = baseParams[key];
+    const norm = limits ? (value - limits.min) / (limits.max - limits.min) : 0;
+    const clamped = Math.min(1, Math.max(0, norm));
+
+    const radius = 15;
+    const centerX = 18;
+    const centerY = 18;
+    const startDeg = 30;   // lower-left-ish
+    const endDeg = 340;    // lower-right-ish
+
+    if (clamped <= 0) {
+      arcSvg.setAttribute('d', '');
+    } else {
+      const currentDeg = startDeg + (endDeg - startDeg) * clamped;
+      const startRad = (startDeg * Math.PI) / 180;
+      const currentRad = (currentDeg * Math.PI) / 180;
+
+      const x0 = centerX + radius * Math.cos(startRad);
+      const y0 = centerY + radius * Math.sin(startRad);
+      const x1 = centerX + radius * Math.cos(currentRad);
+      const y1 = centerY + radius * Math.sin(currentRad);
+
+      const sweep = 1; // clockwise
+      const arcDeg = currentDeg - startDeg;
+      const largeArcFlag = arcDeg > 180 ? 1 : 0;
+
+      const d = `M ${x0} ${y0} A ${radius} ${radius} 0 ${largeArcFlag} ${sweep} ${x1} ${y1}`;
+      arcSvg.setAttribute('d', d);
+    }
+
+    if (handle) {
+      const startAngle = (startDeg * Math.PI) / 180;
+      const endAngle = (endDeg * Math.PI) / 180;
+      const angle = startAngle + (endAngle - startAngle) * clamped;
+      const handleRadius = radius;
+      const cx = centerX + handleRadius * Math.cos(angle);
+      const cy = centerY + handleRadius * Math.sin(angle);
+      handle.setAttribute('cx', cx.toString());
+      handle.setAttribute('cy', cy.toString());
+    }
+  };
+
+  const syncParamUI = (key) => {
+    const meta = sliderBindings[key];
+    if (!meta) return;
+    const value = baseParams[key];
+    if (meta.horizontal) meta.horizontal.value = value;
+    if (meta.vertical) meta.vertical.value = value;
+    if (meta.labelH) meta.labelH.innerText = meta.formatH ? meta.formatH(value) : value.toFixed(3);
+    if (meta.labelV) meta.labelV.innerText = meta.formatV ? meta.formatV(value) : value.toFixed(3);
+    if (meta.knob) meta.knob.value = value;
+    if (meta.labelK) meta.labelK.innerText = meta.formatK ? meta.formatK(value) : value.toFixed(3);
+    updateKnobVisual(key);
+  };
+
+  const setParam = (key, value) => {
+    baseParams[key] = clampWaveParam(key, value);
+    syncParamUI(key);
+  };
+
+  // Controls Listeners
+  Object.entries(sliderBindings).forEach(([key, meta]) => {
+    if (meta.horizontal) meta.horizontal.addEventListener('input', (e) => setParam(key, e.target.value));
+    if (meta.vertical) meta.vertical.addEventListener('input', (e) => setParam(key, e.target.value));
+    if (meta.knob) meta.knob.addEventListener('input', (e) => setParam(key, e.target.value));
+  });
+
+  // Initialize labels from existing slider defaults
+  Object.entries(sliderBindings).forEach(([key, meta]) => {
+    const initialValue = meta.horizontal?.value ?? meta.vertical?.value ?? baseParams[key];
+    setParam(key, initialValue);
+  });
+
+  const toggle = document.getElementById('wave-toggle');
+  const codeToggle = document.getElementById('wave-code-toggle');
+
+  if (codeToggle) {
+    state.wave.renderMode = codeToggle.checked ? 'code' : 'lines';
+    codeToggle.addEventListener('change', () => {
+      state.wave.renderMode = codeToggle.checked ? 'code' : 'lines';
+    });
+  }
   let time = 0;
 
   function render() {
     ctx.clearRect(0, 0, width, height);
+
+    // Check toggle
+    if (toggle && !toggle.checked) {
+      requestAnimationFrame(render);
+      return;
+    }
+
     const isDark = THEMES[state.currentTheme].isDark;
     const baseOpacity = isDark ? 0.9 : 0.6;
     const yAxis = height / 2;
+
+    ctx.font = '700 11px "IBM Plex Mono", monospace';
+    ctx.textBaseline = 'middle';
+
+    const codePalette = isDark ? CODE_GRADIENT.dark : CODE_GRADIENT.light;
+    const renderMode = state.wave.renderMode || 'code';
 
     const waves = [
       // Original Waves (Slow & Wide)
@@ -286,7 +513,7 @@ function setupWaveAnimation() {
       { timeModifier: 0.7, lineWidth: 1, amplitude: 90, wavelength: 240, gradient: [`rgba(88, 28, 135, ${baseOpacity * 0.7})`, `rgba(124, 58, 237, ${baseOpacity * 0.7})`, `rgba(30, 64, 175, ${baseOpacity * 0.7})`] },
       { timeModifier: 1.1, lineWidth: 0.5, amplitude: 30, wavelength: 120, gradient: [`rgba(59, 130, 246, ${baseOpacity * 0.4})`, `rgba(147, 197, 253, ${baseOpacity * 0.4})`] },
 
-      // Symphony-Inspired Waves (Fast, High Frequency, High Amplitude)
+      // Symphony-Inspired Waves
       { timeModifier: 2, lineWidth: 1, amplitude: -50, wavelength: 15, gradient: [`rgba(59, 130, 246, ${baseOpacity})`, `rgba(6, 182, 212, ${baseOpacity})`] },
       { timeModifier: 1, lineWidth: 2, amplitude: -100, wavelength: 30, gradient: [`rgba(30, 58, 138, ${baseOpacity * 0.8})`, `rgba(37, 99, 235, ${baseOpacity * 0.8})`] },
       { timeModifier: 0.5, lineWidth: 1, amplitude: -200, wavelength: 60, gradient: [`rgba(88, 28, 135, ${baseOpacity * 0.7})`, `rgba(124, 58, 237, ${baseOpacity * 0.7})`] },
@@ -295,23 +522,75 @@ function setupWaveAnimation() {
     ];
 
     waves.forEach((wave, index) => {
-      ctx.beginPath();
-      ctx.lineWidth = wave.lineWidth;
-      const gradient = ctx.createLinearGradient(0, 0, width, 0);
-      wave.gradient.forEach((color, i) => gradient.addColorStop(i / (wave.gradient.length - 1), color));
-      ctx.strokeStyle = gradient;
+      // Apply Combined Parameters
+      const effectiveAmp = wave.amplitude * baseParams.amp;
+      const effectiveWavelength = wave.wavelength / baseParams.freq;
+      const k = (2 * Math.PI) / effectiveWavelength;
 
-      for (let x = 0; x < width; x += 5) {
-        const k = (2 * Math.PI) / wave.wavelength;
-        const y = yAxis +
-          Math.sin(k * x + time * wave.timeModifier) * wave.amplitude * Math.sin(time * 0.2 + index) +
-          Math.cos(x * 0.01 + time) * (wave.amplitude * 0.2);
-        x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      if (renderMode === 'lines') {
+        ctx.beginPath();
+        ctx.lineWidth = wave.lineWidth;
+        const gradient = ctx.createLinearGradient(0, 0, width, 0);
+        wave.gradient.forEach((color, i) => gradient.addColorStop(i / (wave.gradient.length - 1), color));
+        ctx.strokeStyle = gradient;
+
+        for (let x = 0; x < width; x += 5) {
+          const position = width > 0 ? x / width : 0;
+          const decay = Math.pow(position, baseParams.steepness);
+          const localAmp = effectiveAmp * decay;
+
+          const y = yAxis +
+            Math.sin(k * x + time * wave.timeModifier) * localAmp * Math.sin(time * 0.2 + index) +
+            Math.cos(x * 0.01 + time) * (localAmp * 0.2);
+
+          x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      } else {
+        const step = 8;
+        const streamSpeed = 90; // pixels per unit time
+
+        for (let x = 0; x < width + step; x += step) {
+          let phaseX = x - streamSpeed * time * (index % 2 === 0 ? 1 : -1);
+          // wrap so glyphs continuously flow
+          phaseX %= (width + step);
+          if (phaseX < -step) phaseX += (width + step);
+
+          const clampedX = Math.max(0, Math.min(width, phaseX));
+          const position = width > 0 ? clampedX / width : 0;
+          const decay = Math.pow(position, baseParams.steepness);
+          const localAmp = effectiveAmp * decay;
+
+          const y = yAxis +
+            Math.sin(k * phaseX + time * wave.timeModifier) * localAmp * Math.sin(time * 0.2 + index) +
+            Math.cos(phaseX * 0.01 + time) * (localAmp * 0.2);
+
+          const flicker = 0.5 + 0.5 * Math.sin(time * 2 + x * 0.08 + index);
+          const codeAlpha = Math.min(1, Math.max(0.4, baseOpacity * (0.6 + 0.4 * flicker)));
+          const palettePos = Math.min(1, Math.max(0, position));
+          const baseIndex = Math.floor(palettePos * (codePalette.length - 1));
+          const colorIndex = (baseIndex + index) % codePalette.length;
+          const baseHex = codePalette[colorIndex];
+          ctx.fillStyle = toRgba(baseHex, codeAlpha);
+
+          const sequenceIndex = Math.floor(x / step) + index * 3;
+          // Mostly binary with slightly more frequent hex "spice"
+          let token;
+          if (sequenceIndex % 12 < 3) {
+            // 3 out of every 12 positions are hex (~25%)
+            const hexIndex = sequenceIndex % CODE_HEX.length;
+            token = CODE_HEX[hexIndex];
+          } else {
+            const binIndex = sequenceIndex % CODE_BINARY.length;
+            token = CODE_BINARY[binIndex];
+          }
+
+          ctx.fillText(token, phaseX, y);
+        }
       }
-      ctx.stroke();
     });
 
-    time += 0.008;
+    time += 0.008 * baseParams.speed;
     requestAnimationFrame(render);
   }
   render();
@@ -375,6 +654,83 @@ async function handleChatSend() {
   }
 }
 
+/* AI WAVE MODIFIER */
+function parseWavePrompt(text) {
+  const prompt = text.toLowerCase();
+  const parsedParams = { ...state.wave.params };
+  let matched = false;
+
+  const applyPreset = (keywords, params) => {
+    if (keywords.some((word) => prompt.includes(word))) {
+      Object.entries(params).forEach(([key, value]) => {
+        parsedParams[key] = clampWaveParam(key, value);
+      });
+      matched = true;
+    }
+  };
+
+  applyPreset(['storm', 'thunder', 'chaos', 'angry', 'wild'], { speed: 2.4, freq: 1.5, amp: 2.1, steepness: 4.2 });
+  applyPreset(['calm', 'gentle', 'serene', 'smooth', 'quiet'], { speed: 0.35, freq: 0.35, amp: 0.6, steepness: 0.9 });
+  applyPreset(['fast', 'rapid', 'hurry', 'speed'], { speed: 1.8 });
+  applyPreset(['slow', 'relax', 'drift', 'lag'], { speed: 0.45 });
+  applyPreset(['choppy', 'tight', 'busy', 'jitter'], { freq: 1.6, steepness: 3.5 });
+  applyPreset(['long', 'rolling', 'wide', 'swell'], { freq: 0.3 });
+  applyPreset(['high', 'tall', 'big', 'huge'], { amp: 2.0 });
+  applyPreset(['low', 'flat', 'shallow', 'small'], { amp: 0.7 });
+  applyPreset(['sharp', 'spiky', 'pointy'], { steepness: 4.5 });
+  applyPreset(['round', 'soft', 'smooth'], { steepness: 0.8 });
+
+  return { params: parsedParams, matched };
+}
+
+function updateWaveControlsFromParams(params) {
+  const controlMap = {
+    speed: ['wave-speed', 'wave-speed-v'],
+    freq: ['wave-freq', 'wave-freq-v'],
+    amp: ['wave-amp', 'wave-amp-v'],
+    steepness: ['wave-steepness', 'wave-steepness-v']
+  };
+
+  Object.entries(controlMap).forEach(([key, ids]) => {
+    if (typeof params[key] === 'undefined') return;
+    const value = clampWaveParam(key, params[key]);
+    const target = ids.map(id => document.getElementById(id)).find(Boolean);
+    if (target) {
+      target.value = value;
+      target.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+  });
+}
+
+function applyWavePrompt() {
+  const promptEl = document.getElementById('wave-prompt');
+  if (!promptEl) return;
+
+  const prompt = promptEl.value.trim();
+  if (!prompt) return;
+
+  console.log("AI Wave Prompt:", prompt);
+
+  const { params, matched } = parseWavePrompt(prompt);
+
+  if (matched) {
+    updateWaveControlsFromParams(params);
+  }
+
+  // Feedback
+  const btn = document.querySelector('button[onclick="applyWavePrompt()"]');
+  if (btn) {
+    const originalText = btn.innerText;
+    btn.innerText = matched ? "Parameters Optimized" : "No Keywords Detected";
+    btn.classList.toggle('bg-green-600', matched);
+    btn.classList.toggle('bg-yellow-600', !matched);
+    setTimeout(() => {
+      btn.innerText = originalText;
+      btn.classList.remove('bg-green-600', 'bg-yellow-600');
+    }, 2000);
+  }
+}
+
 // Global API
 window.navigateTo = navigateTo;
 window.toggleMobileMenu = toggleMobileMenu;
@@ -385,3 +741,4 @@ window.updateBrandColor = updateBrandColor;
 window.updateAmbientColor = updateAmbientColor;
 window.resetColors = resetColors;
 window.handleChatSend = handleChatSend;
+window.applyWavePrompt = applyWavePrompt;

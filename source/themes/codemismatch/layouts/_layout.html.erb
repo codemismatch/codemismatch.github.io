@@ -566,8 +566,8 @@
     </footer>
 
     <!-- Theme Control -->
-    <div class="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-4">
-        <div id="theme-panel" class="hidden bg-skin-surface border border-skin-border p-5 rounded-lg shadow-2xl w-72 animate-fade-in backdrop-blur-md">
+    <div class="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-3">
+        <div id="theme-panel" class="hidden bg-skin-surface border border-skin-border p-4 rounded-lg shadow-2xl w-72 max-h-[92vh] md:max-h-none overflow-y-auto md:overflow-visible animate-fade-in backdrop-blur-md">
             <!-- Header -->
             <div class="flex items-center justify-between mb-4 border-b border-skin-border pb-3">
                 <span class="font-mono text-xs font-bold text-skin-muted uppercase tracking-widest">System Control</span>
@@ -575,7 +575,7 @@
             </div>
             
             <!-- Themes -->
-            <div class="mb-6">
+            <div class="mb-4">
                 <label class="block font-mono text-[10px] font-bold text-skin-muted uppercase mb-2">Environment</label>
                 <div class="space-y-1">
                     <button onclick="setTheme('void')" class="w-full text-left px-3 py-2 rounded font-mono text-xs transition-all flex items-center justify-between group hover:bg-skin-surface-hover text-skin-text" id="btn-theme-void">
@@ -591,7 +591,7 @@
             </div>
 
             <!-- Palettes -->
-            <div class="mb-4">
+            <div class="mb-3">
                  <div class="flex items-center justify-between mb-2">
                      <label class="block font-mono text-[10px] font-bold text-skin-muted uppercase">Theme Palettes</label>
                      <button onclick="resetColors()" class="text-[10px] text-skin-muted hover:text-brand-600 flex items-center gap-1 transition-colors">
@@ -616,14 +616,28 @@
                         </div>
                          <div class="flex flex-col">
                             <span class="font-mono text-xs text-skin-text uppercase" id="ambient-color-label">#0f172a</span>
-                            <span class="font-mono text-[9px] text-skin-muted">Background Gradient</span>
+                         <span class="font-mono text-[9px] text-skin-muted">Background Gradient</span>
                         </div>
                      </div>
                  </div>
             </div>
 
+            <!-- Binary Stream Toggle -->
+            <div class="mb-2">
+                <div class="flex items-center justify-between">
+                    <div class="flex flex-col">
+                        <span class="font-mono text-[10px] font-bold text-skin-muted uppercase">Binary Stream</span>
+                        <span class="font-mono text-[9px] text-skin-muted">Toggle code glyph waves</span>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                       <input type="checkbox" id="wave-code-toggle" class="sr-only peer" checked>
+                       <div class="w-7 h-4 bg-skin-base border border-skin-border peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-skin-muted after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-brand-600 peer-checked:after:bg-white"></div>
+                    </label>
+                </div>
+            </div>
+
             <!-- Wave Controls -->
-            <div class="mb-4 pt-4 border-t border-skin-border">
+            <div class="mb-3 pt-3 border-t border-skin-border">
                  <div class="flex items-center justify-between mb-2">
                      <label class="block font-mono text-[10px] font-bold text-skin-muted uppercase">Wave Dynamics</label>
                      <label class="relative inline-flex items-center cursor-pointer">
@@ -631,7 +645,9 @@
                         <div class="w-7 h-4 bg-skin-base border border-skin-border peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-skin-muted after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-brand-600 peer-checked:after:bg-white"></div>
                      </label>
                  </div>
-                 <div class="space-y-3 px-1">
+                 
+                 <!-- Horizontal Sliders (Azure default) -->
+                 <div id="wave-controls-horizontal" class="space-y-3 px-1">
                      <!-- Speed -->
                      <div>
                         <div class="flex justify-between text-[9px] font-mono text-skin-muted mb-1">
@@ -665,14 +681,144 @@
                         <input type="range" id="wave-steepness" min="0.1" max="10" step="0.1" value="1.4" class="w-full h-1 rounded-lg appearance-none cursor-pointer accent-brand-600" style="background-color: var(--slider-bg, var(--skin-base))">
                      </div>
                  </div>
+                 
+                 <!-- Vertical Sliders with Scale (Paper theme) -->
+                 <div id="wave-controls-vertical" class="hidden">
+                     <div class="grid grid-cols-4 gap-2 h-48">
+                         <!-- Speed Slider -->
+                         <div class="flex flex-col items-center">
+                             <div class="text-[8px] font-mono text-skin-muted uppercase mb-1">Speed</div>
+                             <div class="flex-1 relative w-12 flex items-center justify-center">
+                                 <div class="absolute left-0 top-0 h-full w-4 flex flex-col justify-between text-[6px] font-mono text-skin-muted">
+                                     <span>5.0</span>
+                                     <span>4.0</span>
+                                     <span>3.0</span>
+                                     <span>2.0</span>
+                                     <span>1.0</span>
+                                     <span>0.0</span>
+                                 </div>
+                                 <input type="range" id="wave-speed-v" min="0" max="5" step="0.001" value="0.896" orient="vertical" class="vertical-slider appearance-none w-1 h-full cursor-pointer accent-brand-600 rounded-lg" style="writing-mode: bt-lr; -webkit-appearance: slider-vertical;">
+                             </div>
+                             <div class="text-[9px] font-mono text-brand-600 mt-1" id="wave-speed-val-v">0.896</div>
+                         </div>
+                         
+                         <!-- Frequency Slider -->
+                         <div class="flex flex-col items-center">
+                             <div class="text-[8px] font-mono text-skin-muted uppercase mb-1">Freq</div>
+                             <div class="flex-1 relative w-12 flex items-center justify-center">
+                                 <div class="absolute left-0 top-0 h-full w-4 flex flex-col justify-between text-[6px] font-mono text-skin-muted">
+                                     <span>3.0</span>
+                                     <span>2.5</span>
+                                     <span>2.0</span>
+                                     <span>1.5</span>
+                                     <span>1.0</span>
+                                     <span>0.1</span>
+                                 </div>
+                                 <input type="range" id="wave-freq-v" min="0.1" max="3" step="0.001" value="0.198" orient="vertical" class="vertical-slider appearance-none w-1 h-full cursor-pointer accent-brand-600 rounded-lg" style="writing-mode: bt-lr; -webkit-appearance: slider-vertical;">
+                             </div>
+                             <div class="text-[9px] font-mono text-brand-600 mt-1" id="wave-freq-val-v">0.198</div>
+                         </div>
+                         
+                         <!-- Amplitude Slider -->
+                         <div class="flex flex-col items-center">
+                             <div class="text-[8px] font-mono text-skin-muted uppercase mb-1">Amp</div>
+                             <div class="flex-1 relative w-12 flex items-center justify-center">
+                                 <div class="absolute left-0 top-0 h-full w-4 flex flex-col justify-between text-[6px] font-mono text-skin-muted">
+                                     <span>3.0</span>
+                                     <span>2.5</span>
+                                     <span>2.0</span>
+                                     <span>1.5</span>
+                                     <span>1.0</span>
+                                     <span>0.0</span>
+                                 </div>
+                                 <input type="range" id="wave-amp-v" min="0" max="3" step="0.001" value="1.356" orient="vertical" class="vertical-slider appearance-none w-1 h-full cursor-pointer accent-brand-600 rounded-lg" style="writing-mode: bt-lr; -webkit-appearance: slider-vertical;">
+                             </div>
+                             <div class="text-[9px] font-mono text-brand-600 mt-1" id="wave-amp-val-v">1.356</div>
+                         </div>
+                         
+                         <!-- Decay Slider -->
+                         <div class="flex flex-col items-center">
+                             <div class="text-[8px] font-mono text-skin-muted uppercase mb-1">Decay</div>
+                             <div class="flex-1 relative w-12 flex items-center justify-center">
+                                 <div class="absolute left-0 top-0 h-full w-4 flex flex-col justify-between text-[6px] font-mono text-skin-muted">
+                                     <span>10</span>
+                                     <span>8</span>
+                                     <span>6</span>
+                                     <span>4</span>
+                                     <span>2</span>
+                                     <span>0</span>
+                                 </div>
+                                 <input type="range" id="wave-steepness-v" min="0.1" max="10" step="0.1" value="1.4" orient="vertical" class="vertical-slider appearance-none w-1 h-full cursor-pointer accent-brand-600 rounded-lg" style="writing-mode: bt-lr; -webkit-appearance: slider-vertical;">
+                             </div>
+                             <div class="text-[9px] font-mono text-brand-600 mt-1" id="wave-steepness-val-v">1.40</div>
+                         </div>
+                     </div>
+                 </div>
+
+                 <!-- Rotary Knobs (Void theme) -->
+                 <div id="wave-controls-knob" class="hidden mt-3">
+                     <div class="grid grid-cols-4 gap-3">
+                         <% knobs = [
+                           { id: 'speed', label: 'Speed', min: '0',   max: '5',   step: '0.001', value: '0.896', suffix: 'x' },
+                           { id: 'freq',  label: 'Freq',  min: '0.1', max: '3',   step: '0.001', value: '0.198', suffix: 'x' },
+                           { id: 'amp',   label: 'Amp',   min: '0',   max: '3',   step: '0.001', value: '1.356', suffix: 'x' },
+                           { id: 'steepness', label: 'Decay', min: '0.1', max: '10', step: '0.1', value: '1.4', suffix: '' }
+                         ] %>
+                         <% knobs.each do |k| %>
+                         <div class="flex flex-col items-center">
+                             <div class="text-[8px] font-mono text-skin-muted uppercase mb-1"><%= k[:label] %></div>
+                             <div class="relative w-12 h-12 mb-1">
+                                 <svg viewBox="0 0 36 36" class="w-full h-full" data-knob="<%= k[:id] %>">
+                                     <circle cx="18" cy="18" r="15" class="fill-transparent stroke-skin-border" stroke-width="2" />
+                                     <!-- Active arc drawn programmatically from ~30° to ~340° -->
+                                     <path class="fill-transparent stroke-brand-600 knob-arc" stroke-width="2.5" stroke-linecap="round" />
+                                     <!-- White handle knob -->
+                                     <circle cx="18" cy="18" r="2" class="knob-handle fill-white shadow-sm" />
+                                 </svg>
+                                 <input
+                                     type="range"
+                                     id="wave-<%= k[:id] %>-knob"
+                                     min="<%= k[:min] %>"
+                                     max="<%= k[:max] %>"
+                                     step="<%= k[:step] %>"
+                                     value="<%= k[:value] %>"
+                                     class="absolute inset-0 opacity-0 cursor-pointer"
+                                 >
+                             </div>
+                             <div class="text-[9px] font-mono text-brand-600" id="wave-<%= k[:id] %>-val-knob"><%= k[:value] %><%= k[:suffix] %></div>
+                         </div>
+                         <% end %>
+                     </div>
+                 </div>
+            </div>
+
+            <!-- AI Wave Modifier -->
+            <div class="mb-3 pt-3 border-t border-skin-border">
+                 <div class="flex items-center justify-between mb-2">
+                     <label class="block font-mono text-[10px] font-bold text-skin-muted uppercase">AI Wave Modifier</label>
+                 </div>
+                 <div class="space-y-2">
+                     <textarea 
+                         id="wave-prompt" 
+                         placeholder="Describe how you want the waves to behave..."
+                         class="w-full bg-skin-base border border-skin-border p-3 text-skin-text font-mono text-xs focus:outline-none focus:border-brand-600 focus:ring-1 focus:ring-brand-600 placeholder-skin-muted transition-all resize-none"
+                         rows="3"
+                     ></textarea>
+                     <button 
+                         onclick="applyWavePrompt()" 
+                         class="w-full inline-flex items-center justify-center font-mono font-medium tracking-wide transition-all duration-200 focus:outline-none uppercase bg-brand-600 text-white hover:bg-brand-500 border border-transparent h-8 px-4 text-xs"
+                     >
+                         Apply Changes
+                     </button>
+                 </div>
             </div>
             
-            <div class="mt-4 pt-3 border-t border-skin-border text-[9px] text-skin-muted font-mono">
+            <div class="mt-3 pt-2 border-t border-skin-border text-[9px] text-skin-muted font-mono">
                 Architect Status: ONLINE <br> Version: 3.1.0 (HTML5)
             </div>
         </div>
         
-        <button onclick="toggleThemePanel()" class="w-12 h-12 rounded-full bg-brand-600 text-white flex items-center justify-center shadow-[0_4px_14px_0_rgba(var(--brand-600),0.39)] hover:bg-brand-500 hover:scale-105 transition-all border border-brand-400">
+        <button onclick="toggleThemePanel()" class="w-11 h-11 rounded-full bg-brand-600 text-white flex items-center justify-center shadow-[0_4px_14px_0_rgba(var(--brand-600),0.39)] hover:bg-brand-500 hover:scale-105 transition-all border border-brand-400">
             <i data-lucide="palette" class="w-5 h-5"></i>
         </button>
     </div>
