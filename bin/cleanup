@@ -1,0 +1,35 @@
+#!/bin/bash
+set -e
+
+# bin/cleanup - remove local build artifacts and any leftover deploy worktree
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+
+BUILD_DIR="${REPO_ROOT}/build"
+WORKTREE_DIR="${REPO_ROOT}/.gh-pages-deploy"
+
+echo "🧹 Cleaning build artifacts and deploy worktree..."
+
+if [ -d "${BUILD_DIR}" ]; then
+  echo "   Removing build directory: ${BUILD_DIR}"
+  rm -rf "${BUILD_DIR}"
+else
+  echo "   No build directory found."
+fi
+
+if [ -d "${WORKTREE_DIR}" ]; then
+  echo "   Removing deploy worktree: ${WORKTREE_DIR}"
+  # Try to remove via git worktree; fall back to rm -rf if needed
+  if ! git -C "${REPO_ROOT}" worktree remove "${WORKTREE_DIR}" --force 2>/dev/null; then
+    rm -rf "${WORKTREE_DIR}"
+  fi
+else
+  echo "   No deploy worktree directory found."
+fi
+
+echo "   Pruning stale git worktrees (if any)..."
+git -C "${REPO_ROOT}" worktree prune || true
+
+echo "✅ Cleanup complete."
+
