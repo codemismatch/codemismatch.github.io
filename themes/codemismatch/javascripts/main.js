@@ -313,6 +313,28 @@ window.setTheme = function(themeKey) {
             btn.querySelector('span:last-child').className = "text-[9px] uppercase opacity-70 text-skin-muted";
         }
     });
+
+    // Wave control layout (must align with custom.js)
+    const horizontalControls = document.getElementById('wave-controls-horizontal');
+    const verticalControls = document.getElementById('wave-controls-vertical');
+    const knobControls = document.getElementById('wave-controls-knob');
+
+    if (themeKey === 'paper') {
+        // Paper: vertical faders
+        if (horizontalControls) horizontalControls.classList.add('hidden');
+        if (verticalControls) verticalControls.classList.remove('hidden');
+        if (knobControls) knobControls.classList.add('hidden');
+    } else if (themeKey === 'void') {
+        // Void: rotary knobs
+        if (horizontalControls) horizontalControls.classList.add('hidden');
+        if (verticalControls) verticalControls.classList.add('hidden');
+        if (knobControls) knobControls.classList.remove('hidden');
+    } else {
+        // Azure: horizontal sliders
+        if (horizontalControls) horizontalControls.classList.remove('hidden');
+        if (verticalControls) verticalControls.classList.add('hidden');
+        if (knobControls) knobControls.classList.add('hidden');
+    }
 };
 
 
@@ -388,98 +410,5 @@ window.resetColors = function() {
 }
 
 /* --- WAVE ANIMATION --- */
-function setupWaveAnimation() {
-    const canvas = document.getElementById('wave-canvas');
-    const ctx = canvas.getContext('2d');
-    
-    // Controls
-    const toggle = document.getElementById('wave-toggle');
-    const speedInput = document.getElementById('wave-speed');
-    const freqInput = document.getElementById('wave-freq');
-    const ampInput = document.getElementById('wave-amp');
-    const steepnessInput = document.getElementById('wave-steepness');
-    
-    // Update Labels
-    speedInput.addEventListener('input', (e) => document.getElementById('wave-speed-val').innerText = parseFloat(e.target.value).toFixed(3) + 'x');
-    freqInput.addEventListener('input', (e) => document.getElementById('wave-freq-val').innerText = parseFloat(e.target.value).toFixed(3) + 'x');
-    ampInput.addEventListener('input', (e) => document.getElementById('wave-amp-val').innerText = parseFloat(e.target.value).toFixed(3) + 'x');
-    steepnessInput.addEventListener('input', (e) => document.getElementById('wave-steepness-val').innerText = parseFloat(e.target.value).toFixed(3));
-
-    let width, height;
-    
-    function resize() {
-        width = canvas.parentElement.offsetWidth;
-        height = canvas.parentElement.offsetHeight;
-        canvas.width = width * window.devicePixelRatio;
-        canvas.height = height * window.devicePixelRatio;
-        ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-    }
-    window.addEventListener('resize', resize);
-    resize();
-
-    let time = 0;
-
-    function render() {
-        ctx.clearRect(0, 0, width, height);
-        
-        if (!toggle.checked) {
-            requestAnimationFrame(render);
-            return;
-        }
-
-        const isDark = THEMES[state.currentTheme].isDark;
-        const baseOpacity = isDark ? 0.9 : 0.6;
-        const yAxis = height / 2;
-        
-        // Get Control Values
-        const speedMult = parseFloat(speedInput.value);
-        const freqMult = parseFloat(freqInput.value);
-        const ampMult = parseFloat(ampInput.value);
-        const steepnessVal = parseFloat(steepnessInput.value);
-
-        const waves = [
-            // Original Waves (Slow & Wide)
-            { timeModifier: 1, lineWidth: 2, amplitude: 50, wavelength: 200, gradient: [`rgba(59, 130, 246, ${baseOpacity})`, `rgba(6, 182, 212, ${baseOpacity})`, `rgba(168, 85, 247, ${baseOpacity})`, `rgba(236, 72, 153, ${baseOpacity})`] },
-            { timeModifier: 0.5, lineWidth: 1.5, amplitude: 140, wavelength: 300, gradient: [`rgba(30, 58, 138, ${baseOpacity * 0.8})`, `rgba(37, 99, 235, ${baseOpacity * 0.8})`, `rgba(79, 70, 229, ${baseOpacity * 0.8})`] },
-            { timeModifier: 0.7, lineWidth: 1, amplitude: 90, wavelength: 240, gradient: [`rgba(88, 28, 135, ${baseOpacity * 0.7})`, `rgba(124, 58, 237, ${baseOpacity * 0.7})`, `rgba(30, 64, 175, ${baseOpacity * 0.7})`] },
-            { timeModifier: 1.1, lineWidth: 0.5, amplitude: 30, wavelength: 120, gradient: [`rgba(59, 130, 246, ${baseOpacity * 0.4})`, `rgba(147, 197, 253, ${baseOpacity * 0.4})`] },
-            
-            // Symphony-Inspired Waves (Fast, High Frequency, High Amplitude)
-            { timeModifier: 2, lineWidth: 1, amplitude: -50, wavelength: 15, gradient: [`rgba(59, 130, 246, ${baseOpacity})`, `rgba(6, 182, 212, ${baseOpacity})`] },
-            { timeModifier: 1, lineWidth: 2, amplitude: -100, wavelength: 30, gradient: [`rgba(30, 58, 138, ${baseOpacity * 0.8})`, `rgba(37, 99, 235, ${baseOpacity * 0.8})`] },
-            { timeModifier: 0.5, lineWidth: 1, amplitude: -200, wavelength: 60, gradient: [`rgba(88, 28, 135, ${baseOpacity * 0.7})`, `rgba(124, 58, 237, ${baseOpacity * 0.7})`] },
-            { timeModifier: 0.25, lineWidth: 3, amplitude: -160, wavelength: 40, gradient: [`rgba(59, 130, 246, ${baseOpacity * 0.6})`, `rgba(147, 197, 253, ${baseOpacity * 0.6})`] },
-            { timeModifier: 0.35, lineWidth: 2, amplitude: -240, wavelength: 70, gradient: [`rgba(168, 85, 247, ${baseOpacity * 0.5})`, `rgba(236, 72, 153, ${baseOpacity * 0.5})`] }
-        ];
-
-        waves.forEach((wave, index) => {
-            ctx.beginPath();
-            ctx.lineWidth = wave.lineWidth;
-            const gradient = ctx.createLinearGradient(0, 0, width, 0);
-            wave.gradient.forEach((color, i) => gradient.addColorStop(i / (wave.gradient.length - 1), color));
-            ctx.strokeStyle = gradient;
-
-            for (let x = 0; x < width; x += 5) {
-                // Apply Frequency (wavelength)
-                const effectiveWavelength = wave.wavelength / freqMult;
-                const k = (2 * Math.PI) / effectiveWavelength;
-                
-                // Apply Amplitude with Spatial Decay (High Right -> Low Left)
-                const baseAmplitude = wave.amplitude * ampMult;
-                const decay = Math.pow(x / width, steepnessVal); 
-                const effectiveAmplitude = baseAmplitude * decay;
-                
-                const y = yAxis +
-                    Math.sin(k * x + time * wave.timeModifier) * effectiveAmplitude * Math.sin(time * 0.2 + index) +
-                    Math.cos(x * 0.01 + time) * (effectiveAmplitude * 0.2);
-                x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-            }
-            ctx.stroke();
-        });
-
-        // Apply Speed
-        time += 0.008 * speedMult;
-        requestAnimationFrame(render);
-    }
-    render();
-}
+// The canonical setupWaveAnimation (with Binary Stream support)
+// now lives in custom.js and is invoked from there.
