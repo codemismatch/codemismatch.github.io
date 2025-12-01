@@ -421,7 +421,7 @@ function setupWaveAnimation() {
     const centerX = 18;
     const centerY = 18;
     const startDeg = 120;   // approx 7 o'clock
-    const endDeg = 430;     // approx 5 o'clock (120 + 310)
+    const endDeg = 410;     // approx 5 o'clock (120 + 290° sweep)
 
     if (clamped <= 0) {
       arcSvg.setAttribute('d', '');
@@ -478,6 +478,173 @@ function setupWaveAnimation() {
     if (meta.horizontal) meta.horizontal.addEventListener('input', (e) => setParam(key, e.target.value));
     if (meta.vertical) meta.vertical.addEventListener('input', (e) => setParam(key, e.target.value));
     if (meta.knob) meta.knob.addEventListener('input', (e) => setParam(key, e.target.value));
+  });
+
+  // Rotary Knob Interaction (circular drag)
+  Object.entries(sliderBindings).forEach(([key, meta]) => {
+    if (!meta.knob) return;
+    const svg = document.querySelector(`svg[data-knob="${key}"]`);
+    if (!svg) return;
+
+    const limits = WAVE_LIMITS[key];
+    const startDeg = 120;  // Start angle (7 o'clock)
+    const endDeg = 410;     // End angle (120 + 290° sweep)
+    const angleRange = endDeg - startDeg;
+    const centerX = 18;     // SVG center X
+    const centerY = 18;     // SVG center Y
+    const radius = 15;      // Knob radius
+
+    let isDragging = false;
+    let lastAngle = null;
+
+    const angleToValue = (angleDeg, prevAngle = null) => {
+      // Handle wrap-around: if we cross the boundary, adjust angle
+      if (prevAngle !== null) {
+        // Check if we wrapped around the start/end boundary
+        const wrapThreshold = 180; // Half circle
+        let angleDiff = angleDeg - prevAngle;
+        
+        // Normalize angle difference to -180 to 180 range
+        if (angleDiff > 180) angleDiff -= 360;
+        if (angleDiff < -180) angleDiff += 360;
+        
+        // If large jump, likely wrapped - adjust angleDeg
+        if (Math.abs(angleDiff) > wrapThreshold) {
+          if (angleDiff > 0) {
+            angleDeg -= 360;
+          } else {
+            angleDeg += 360;
+          }
+        }
+      }
+      
+      // Normalize angle to 0-1 range based on startDeg to endDeg
+      let normalized = (angleDeg - startDeg) / angleRange;
+      // Clamp to 0-1
+      normalized = Math.max(0, Math.min(1, normalized));
+      // Convert to actual value
+      return limits.min + normalized * (limits.max - limits.min);
+    };
+
+    const valueToAngle = (value) => {
+      const normalized = (value - limits.min) / (limits.max - limits.min);
+      return startDeg + normalized * angleRange;
+    };
+
+    const getAngleFromEvent = (e) => {
+      const rect = svg.getBoundingClientRect();
+      const svgSize = rect.width;
+      const scale = svgSize / 36; // SVG viewBox is 36x36
+      
+      // Get mouse position relative to SVG
+      const mouseX = (e.clientX - rect.left) / scale;
+      const mouseY = (e.clientY - rect.top) / scale;
+      
+      // Calculate angle from center
+      const dx = mouseX - centerX;
+      const dy = mouseY - centerY;
+      let angle = Math.atan2(dy, dx) * (180 / Math.PI);
+      
+      // Convert to 0-360 range
+      if (angle < 0) angle += 360;
+      
+      // Handle extended range: angles 0-120° are ambiguous (could be start 120° or end 360-480°)
+      // Use extended range if we're in the ambiguous region and:
+      // 1. Previous angle was in extended range (360-470°), OR
+      // 2. Current value suggests we're in the upper half of the range
+      if (angle >= 0 && angle < startDeg) {
+        const currentValue = parseFloat(meta.knob.value);
+        const normalized = (currentValue - limits.min) / (limits.max - limits.min);
+        
+        // If previous angle was extended, continue using extended
+        if (lastAngle !== null && lastAngle >= 360) {
+          angle += 360;
+        } 
+        // If current value is in upper 60% of range, use extended interpretation
+        else if (normalized > 0.4) {
+          angle += 360;
+        }
+        // Otherwise, use low interpretation (angle stays as-is, will map to startDeg)
+      }
+      
+      return angle;
+    };
+
+    const handleMouseDown = (e) => {
+      isDragging = true;
+      e.preventDefault();
+      svg.style.cursor = 'grabbing';
+      // Initialize lastAngle from current value for better tracking
+      const currentValue = parseFloat(meta.knob.value);
+      lastAngle = valueToAngle(currentValue);
+      const angle = getAngleFromEvent(e);
+      lastAngle = angle; // Update with actual mouse angle
+      const newValue = angleToValue(angle);
+      setParam(key, newValue);
+    };
+
+    const handleMouseMove = (e) => {
+      if (!isDragging) return;
+      e.preventDefault();
+      const angle = getAngleFromEvent(e);
+      const newValue = angleToValue(angle, lastAngle);
+      lastAngle = angle;
+      setParam(key, newValue);
+    };
+
+    const handleMouseUp = (e) => {
+      if (isDragging) {
+        isDragging = false;
+        lastAngle = null;
+        svg.style.cursor = 'grab';
+        e.preventDefault();
+      }
+    };
+
+    // Disable default range input interaction (we handle it via SVG)
+    meta.knob.style.pointerEvents = 'none';
+    meta.knob.style.cursor = 'default';
+    
+    // Add cursor style to indicate interactivity
+    svg.style.cursor = 'grab';
+    
+    // Add event listeners
+    svg.addEventListener('mousedown', handleMouseDown);
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    
+    // Also handle touch events for mobile
+    const handleTouchStart = (e) => {
+      isDragging = true;
+      e.preventDefault();
+      const touch = e.touches[0];
+      const angle = getAngleFromEvent({ clientX: touch.clientX, clientY: touch.clientY });
+      lastAngle = angle;
+      const newValue = angleToValue(angle);
+      setParam(key, newValue);
+    };
+
+    const handleTouchMove = (e) => {
+      if (!isDragging) return;
+      e.preventDefault();
+      const touch = e.touches[0];
+      const angle = getAngleFromEvent({ clientX: touch.clientX, clientY: touch.clientY });
+      const newValue = angleToValue(angle, lastAngle);
+      lastAngle = angle;
+      setParam(key, newValue);
+    };
+
+    const handleTouchEnd = (e) => {
+      if (isDragging) {
+        isDragging = false;
+        lastAngle = null;
+        e.preventDefault();
+      }
+    };
+
+    svg.addEventListener('touchstart', handleTouchStart, { passive: false });
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+    document.addEventListener('touchend', handleTouchEnd);
   });
 
   // Initialize labels from existing slider defaults
