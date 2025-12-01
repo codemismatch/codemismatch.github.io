@@ -80,6 +80,9 @@ const THEMES = {
   }
 };
 
+// Wave init guard
+let waveInitialized = false;
+
 /* INITIALIZATION */
 document.addEventListener('DOMContentLoaded', function () {
   if (typeof lucide !== 'undefined') lucide.createIcons();
@@ -90,7 +93,6 @@ document.addEventListener('DOMContentLoaded', function () {
     setTheme(state.currentTheme);
   }
   resetColors();
-  setupWaveAnimation();
 
   // Handle initial page from URL hash
   const hash = window.location.hash.slice(1) || 'home';
@@ -170,6 +172,10 @@ function navigateTo(pageId, pushState = true) {
       const container = document.getElementById('chat-messages');
       if (container) container.scrollTop = container.scrollHeight;
     }, 100);
+  }
+
+  if (pageId === 'home') {
+    setupWaveAnimation();
   }
 
   window.scrollTo(0, 0);
@@ -331,7 +337,9 @@ function clampWaveParam(key, value) {
 }
 
 function setupWaveAnimation() {
-  console.log("Initializing Wave Animation...");
+  if (waveInitialized) return;
+  waveInitialized = true;
+
   const canvas = document.getElementById('wave-canvas');
   if (!canvas) {
     console.error("Wave canvas not found!");
@@ -345,8 +353,12 @@ function setupWaveAnimation() {
   const baseParams = state.wave.params;
 
   function resize() {
-    width = canvas.parentElement.offsetWidth;
-    height = canvas.parentElement.offsetHeight;
+    if (!canvas.parentElement) return;
+    const newWidth = canvas.parentElement.offsetWidth;
+    const newHeight = canvas.parentElement.offsetHeight;
+    if (!newWidth || !newHeight) return;
+    width = newWidth;
+    height = newHeight;
     canvas.width = width * window.devicePixelRatio;
     canvas.height = height * window.devicePixelRatio;
     ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -355,56 +367,11 @@ function setupWaveAnimation() {
   window.addEventListener('resize', resize);
   resize();
 
-  // Controls + labels
-  const sliderBindings = {
-    speed: {
-      horizontal: document.getElementById('wave-speed'),
-      vertical: document.getElementById('wave-speed-v'),
-      knob: document.getElementById('wave-speed-knob'),
-      labelH: document.getElementById('wave-speed-val'),
-      labelV: document.getElementById('wave-speed-val-v'),
-      labelK: document.getElementById('wave-speed-val-knob'),
-      formatH: (v) => `${v.toFixed(3)}x`,
-      formatV: (v) => v.toFixed(3),
-      formatK: (v) => `${v.toFixed(3)}x`
-    },
-    freq: {
-      horizontal: document.getElementById('wave-freq'),
-      vertical: document.getElementById('wave-freq-v'),
-      knob: document.getElementById('wave-freq-knob'),
-      labelH: document.getElementById('wave-freq-val'),
-      labelV: document.getElementById('wave-freq-val-v'),
-      labelK: document.getElementById('wave-freq-val-knob'),
-      formatH: (v) => `${v.toFixed(3)}x`,
-      formatV: (v) => v.toFixed(3),
-      formatK: (v) => `${v.toFixed(3)}x`
-    },
-    amp: {
-      horizontal: document.getElementById('wave-amp'),
-      vertical: document.getElementById('wave-amp-v'),
-      knob: document.getElementById('wave-amp-knob'),
-      labelH: document.getElementById('wave-amp-val'),
-      labelV: document.getElementById('wave-amp-val-v'),
-      labelK: document.getElementById('wave-amp-val-knob'),
-      formatH: (v) => `${v.toFixed(3)}x`,
-      formatV: (v) => v.toFixed(3),
-      formatK: (v) => `${v.toFixed(3)}x`
-    },
-    steepness: {
-      horizontal: document.getElementById('wave-steepness'),
-      vertical: document.getElementById('wave-steepness-v'),
-      knob: document.getElementById('wave-steepness-knob'),
-      labelH: document.getElementById('wave-steepness-val'),
-      labelV: document.getElementById('wave-steepness-val-v'),
-      labelK: document.getElementById('wave-steepness-val-knob'),
-      formatH: (v) => v.toFixed(3),
-      formatV: (v) => v.toFixed(2),
-      formatK: (v) => v.toFixed(2)
-    }
-  };
+  // Controls + labels (initialized lazily after first frame)
+  let sliderBindings;
 
   const updateKnobVisual = (key) => {
-    const meta = sliderBindings[key];
+    const meta = sliderBindings?.[key];
     if (!meta || !meta.knob) return;
     const svg = document.querySelector(`svg[data-knob="${key}"]`);
     if (!svg) return;
@@ -456,7 +423,7 @@ function setupWaveAnimation() {
   };
 
   const syncParamUI = (key) => {
-    const meta = sliderBindings[key];
+    const meta = sliderBindings?.[key];
     if (!meta) return;
     const value = baseParams[key];
     if (meta.horizontal) meta.horizontal.value = value;
@@ -473,185 +440,200 @@ function setupWaveAnimation() {
     syncParamUI(key);
   };
 
-  // Controls Listeners
-  Object.entries(sliderBindings).forEach(([key, meta]) => {
-    if (meta.horizontal) meta.horizontal.addEventListener('input', (e) => setParam(key, e.target.value));
-    if (meta.vertical) meta.vertical.addEventListener('input', (e) => setParam(key, e.target.value));
-    if (meta.knob) meta.knob.addEventListener('input', (e) => setParam(key, e.target.value));
-  });
+  const setupWaveControls = () => {
+    sliderBindings = {
+      speed: {
+        horizontal: document.getElementById('wave-speed'),
+        vertical: document.getElementById('wave-speed-v'),
+        knob: document.getElementById('wave-speed-knob'),
+        labelH: document.getElementById('wave-speed-val'),
+        labelV: document.getElementById('wave-speed-val-v'),
+        labelK: document.getElementById('wave-speed-val-knob'),
+        formatH: (v) => `${v.toFixed(3)}x`,
+        formatV: (v) => v.toFixed(3),
+        formatK: (v) => `${v.toFixed(3)}x`
+      },
+      freq: {
+        horizontal: document.getElementById('wave-freq'),
+        vertical: document.getElementById('wave-freq-v'),
+        knob: document.getElementById('wave-freq-knob'),
+        labelH: document.getElementById('wave-freq-val'),
+        labelV: document.getElementById('wave-freq-val-v'),
+        labelK: document.getElementById('wave-freq-val-knob'),
+        formatH: (v) => `${v.toFixed(3)}x`,
+        formatV: (v) => v.toFixed(3),
+        formatK: (v) => `${v.toFixed(3)}x`
+      },
+      amp: {
+        horizontal: document.getElementById('wave-amp'),
+        vertical: document.getElementById('wave-amp-v'),
+        knob: document.getElementById('wave-amp-knob'),
+        labelH: document.getElementById('wave-amp-val'),
+        labelV: document.getElementById('wave-amp-val-v'),
+        labelK: document.getElementById('wave-amp-val-knob'),
+        formatH: (v) => `${v.toFixed(3)}x`,
+        formatV: (v) => v.toFixed(3),
+        formatK: (v) => `${v.toFixed(3)}x`
+      },
+      steepness: {
+        horizontal: document.getElementById('wave-steepness'),
+        vertical: document.getElementById('wave-steepness-v'),
+        knob: document.getElementById('wave-steepness-knob'),
+        labelH: document.getElementById('wave-steepness-val'),
+        labelV: document.getElementById('wave-steepness-val-v'),
+        labelK: document.getElementById('wave-steepness-val-knob'),
+        formatH: (v) => v.toFixed(3),
+        formatV: (v) => v.toFixed(2),
+        formatK: (v) => v.toFixed(2)
+      }
+    };
 
-  // Rotary Knob Interaction (circular drag)
-  Object.entries(sliderBindings).forEach(([key, meta]) => {
-    if (!meta.knob) return;
-    const svg = document.querySelector(`svg[data-knob="${key}"]`);
-    if (!svg) return;
+    // Controls Listeners
+    Object.entries(sliderBindings).forEach(([key, meta]) => {
+      if (meta.horizontal) meta.horizontal.addEventListener('input', (e) => setParam(key, e.target.value));
+      if (meta.vertical) meta.vertical.addEventListener('input', (e) => setParam(key, e.target.value));
+      if (meta.knob) meta.knob.addEventListener('input', (e) => setParam(key, e.target.value));
+    });
 
-    const limits = WAVE_LIMITS[key];
-    const startDeg = 120;  // Start angle (7 o'clock)
-    const endDeg = 410;     // End angle (120 + 290° sweep)
-    const angleRange = endDeg - startDeg;
-    const centerX = 18;     // SVG center X
-    const centerY = 18;     // SVG center Y
-    const radius = 15;      // Knob radius
+    // Rotary Knob Interaction (circular drag)
+    Object.entries(sliderBindings).forEach(([key, meta]) => {
+      if (!meta.knob) return;
+      const svg = document.querySelector(`svg[data-knob="${key}"]`);
+      if (!svg) return;
 
-    let isDragging = false;
-    let lastAngle = null;
+      const limits = WAVE_LIMITS[key];
+      const startDeg = 120;  // Start angle (7 o'clock)
+      const endDeg = 410;     // End angle (120 + 290° sweep)
+      const angleRange = endDeg - startDeg;
+      const centerX = 18;     // SVG center X
+      const centerY = 18;     // SVG center Y
+      const radius = 15;      // Knob radius
 
-    const angleToValue = (angleDeg, prevAngle = null) => {
-      // Handle wrap-around: if we cross the boundary, adjust angle
-      if (prevAngle !== null) {
-        // Check if we wrapped around the start/end boundary
-        const wrapThreshold = 180; // Half circle
-        let angleDiff = angleDeg - prevAngle;
-        
-        // Normalize angle difference to -180 to 180 range
-        if (angleDiff > 180) angleDiff -= 360;
-        if (angleDiff < -180) angleDiff += 360;
-        
-        // If large jump, likely wrapped - adjust angleDeg
-        if (Math.abs(angleDiff) > wrapThreshold) {
-          if (angleDiff > 0) {
-            angleDeg -= 360;
-          } else {
-            angleDeg += 360;
+      let isDragging = false;
+      let lastAngle = null;
+
+      const angleToValue = (angleDeg, prevAngle = null) => {
+        if (prevAngle !== null) {
+          const wrapThreshold = 180;
+          let angleDiff = angleDeg - prevAngle;
+          if (angleDiff > 180) angleDiff -= 360;
+          if (angleDiff < -180) angleDiff += 360;
+          if (Math.abs(angleDiff) > wrapThreshold) {
+            angleDeg += angleDiff > 0 ? -360 : 360;
           }
         }
-      }
-      
-      // Normalize angle to 0-1 range based on startDeg to endDeg
-      let normalized = (angleDeg - startDeg) / angleRange;
-      // Clamp to 0-1
-      normalized = Math.max(0, Math.min(1, normalized));
-      // Convert to actual value
-      return limits.min + normalized * (limits.max - limits.min);
-    };
 
-    const valueToAngle = (value) => {
-      const normalized = (value - limits.min) / (limits.max - limits.min);
-      return startDeg + normalized * angleRange;
-    };
+        let normalized = (angleDeg - startDeg) / angleRange;
+        normalized = Math.max(0, Math.min(1, normalized));
+        return limits.min + normalized * (limits.max - limits.min);
+      };
 
-    const getAngleFromEvent = (e) => {
-      const rect = svg.getBoundingClientRect();
-      const svgSize = rect.width;
-      const scale = svgSize / 36; // SVG viewBox is 36x36
-      
-      // Get mouse position relative to SVG
-      const mouseX = (e.clientX - rect.left) / scale;
-      const mouseY = (e.clientY - rect.top) / scale;
-      
-      // Calculate angle from center
-      const dx = mouseX - centerX;
-      const dy = mouseY - centerY;
-      let angle = Math.atan2(dy, dx) * (180 / Math.PI);
-      
-      // Convert to 0-360 range
-      if (angle < 0) angle += 360;
-      
-      // Handle extended range: angles 0-120° are ambiguous (could be start 120° or end 360-480°)
-      // Use extended range if we're in the ambiguous region and:
-      // 1. Previous angle was in extended range (360-470°), OR
-      // 2. Current value suggests we're in the upper half of the range
-      if (angle >= 0 && angle < startDeg) {
-        const currentValue = parseFloat(meta.knob.value);
-        const normalized = (currentValue - limits.min) / (limits.max - limits.min);
-        
-        // If previous angle was extended, continue using extended
-        if (lastAngle !== null && lastAngle >= 360) {
-          angle += 360;
-        } 
-        // If current value is in upper 60% of range, use extended interpretation
-        else if (normalized > 0.4) {
-          angle += 360;
+      const valueToAngle = (value) => {
+        const normalized = (value - limits.min) / (limits.max - limits.min);
+        return startDeg + normalized * angleRange;
+      };
+
+      const getAngleFromEvent = (e) => {
+        const rect = svg.getBoundingClientRect();
+        const svgSize = rect.width;
+        const scale = svgSize / 36;
+        const mouseX = (e.clientX - rect.left) / scale;
+        const mouseY = (e.clientY - rect.top) / scale;
+        const dx = mouseX - centerX;
+        const dy = mouseY - centerY;
+        let angle = Math.atan2(dy, dx) * (180 / Math.PI);
+        if (angle < 0) angle += 360;
+
+        if (angle >= 0 && angle < startDeg) {
+          const currentValue = parseFloat(meta.knob.value);
+          const normalized = (currentValue - limits.min) / (limits.max - limits.min);
+          if (lastAngle !== null && lastAngle >= 360) {
+            angle += 360;
+          } else if (normalized > 0.4) {
+            angle += 360;
+          }
         }
-        // Otherwise, use low interpretation (angle stays as-is, will map to startDeg)
-      }
-      
-      return angle;
-    };
 
-    const handleMouseDown = (e) => {
-      isDragging = true;
-      e.preventDefault();
-      svg.style.cursor = 'grabbing';
-      // Initialize lastAngle from current value for better tracking
-      const currentValue = parseFloat(meta.knob.value);
-      lastAngle = valueToAngle(currentValue);
-      const angle = getAngleFromEvent(e);
-      lastAngle = angle; // Update with actual mouse angle
-      const newValue = angleToValue(angle);
-      setParam(key, newValue);
-    };
+        return angle;
+      };
 
-    const handleMouseMove = (e) => {
-      if (!isDragging) return;
-      e.preventDefault();
-      const angle = getAngleFromEvent(e);
-      const newValue = angleToValue(angle, lastAngle);
-      lastAngle = angle;
-      setParam(key, newValue);
-    };
-
-    const handleMouseUp = (e) => {
-      if (isDragging) {
-        isDragging = false;
-        lastAngle = null;
-        svg.style.cursor = 'grab';
+      const handleMouseDown = (e) => {
+        isDragging = true;
         e.preventDefault();
-      }
-    };
+        svg.style.cursor = 'grabbing';
+        const currentValue = parseFloat(meta.knob.value);
+        lastAngle = valueToAngle(currentValue);
+        const angle = getAngleFromEvent(e);
+        lastAngle = angle;
+        const newValue = angleToValue(angle);
+        setParam(key, newValue);
+      };
 
-    // Disable default range input interaction (we handle it via SVG)
-    meta.knob.style.pointerEvents = 'none';
-    meta.knob.style.cursor = 'default';
-    
-    // Add cursor style to indicate interactivity
-    svg.style.cursor = 'grab';
-    
-    // Add event listeners
-    svg.addEventListener('mousedown', handleMouseDown);
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-    
-    // Also handle touch events for mobile
-    const handleTouchStart = (e) => {
-      isDragging = true;
-      e.preventDefault();
-      const touch = e.touches[0];
-      const angle = getAngleFromEvent({ clientX: touch.clientX, clientY: touch.clientY });
-      lastAngle = angle;
-      const newValue = angleToValue(angle);
-      setParam(key, newValue);
-    };
-
-    const handleTouchMove = (e) => {
-      if (!isDragging) return;
-      e.preventDefault();
-      const touch = e.touches[0];
-      const angle = getAngleFromEvent({ clientX: touch.clientX, clientY: touch.clientY });
-      const newValue = angleToValue(angle, lastAngle);
-      lastAngle = angle;
-      setParam(key, newValue);
-    };
-
-    const handleTouchEnd = (e) => {
-      if (isDragging) {
-        isDragging = false;
-        lastAngle = null;
+      const handleMouseMove = (e) => {
+        if (!isDragging) return;
         e.preventDefault();
-      }
-    };
+        const angle = getAngleFromEvent(e);
+        const newValue = angleToValue(angle, lastAngle);
+        lastAngle = angle;
+        setParam(key, newValue);
+      };
 
-    svg.addEventListener('touchstart', handleTouchStart, { passive: false });
-    document.addEventListener('touchmove', handleTouchMove, { passive: false });
-    document.addEventListener('touchend', handleTouchEnd);
-  });
+      const handleMouseUp = (e) => {
+        if (isDragging) {
+          isDragging = false;
+          lastAngle = null;
+          svg.style.cursor = 'grab';
+          e.preventDefault();
+        }
+      };
 
-  // Initialize labels from existing slider defaults
-  Object.entries(sliderBindings).forEach(([key, meta]) => {
-    const initialValue = meta.horizontal?.value ?? meta.vertical?.value ?? baseParams[key];
-    setParam(key, initialValue);
-  });
+      meta.knob.style.pointerEvents = 'none';
+      meta.knob.style.cursor = 'default';
+      svg.style.cursor = 'grab';
+
+      svg.addEventListener('mousedown', handleMouseDown);
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+
+      const handleTouchStart = (e) => {
+        isDragging = true;
+        e.preventDefault();
+        const touch = e.touches[0];
+        const angle = getAngleFromEvent({ clientX: touch.clientX, clientY: touch.clientY });
+        lastAngle = angle;
+        const newValue = angleToValue(angle);
+        setParam(key, newValue);
+      };
+
+      const handleTouchMove = (e) => {
+        if (!isDragging) return;
+        e.preventDefault();
+        const touch = e.touches[0];
+        const angle = getAngleFromEvent({ clientX: touch.clientX, clientY: touch.clientY });
+        const newValue = angleToValue(angle, lastAngle);
+        lastAngle = angle;
+        setParam(key, newValue);
+      };
+
+      const handleTouchEnd = (e) => {
+        if (isDragging) {
+          isDragging = false;
+          lastAngle = null;
+          e.preventDefault();
+        }
+      };
+
+      svg.addEventListener('touchstart', handleTouchStart, { passive: false });
+      document.addEventListener('touchmove', handleTouchMove, { passive: false });
+      document.addEventListener('touchend', handleTouchEnd);
+    });
+
+    // Initialize labels from existing slider defaults
+    Object.entries(sliderBindings).forEach(([key, meta]) => {
+      const initialValue = meta.horizontal?.value ?? meta.vertical?.value ?? baseParams[key];
+      setParam(key, initialValue);
+    });
+  };
 
   const toggle = document.getElementById('wave-toggle');
   const codeToggle = document.getElementById('wave-code-toggle');
@@ -771,6 +753,18 @@ function setupWaveAnimation() {
     requestAnimationFrame(render);
   }
   render();
+
+  const scheduleControlsInit = () => {
+    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      window.requestIdleCallback(() => {
+        setupWaveControls();
+      }, { timeout: 500 });
+    } else {
+      setTimeout(setupWaveControls, 0);
+    }
+  };
+
+  scheduleControlsInit();
 }
 
 /* CHAT */
