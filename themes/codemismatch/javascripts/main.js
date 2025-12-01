@@ -6,9 +6,9 @@ const API_KEY = ''; // ENTER YOUR GEMINI API KEY HERE
 /* --- STATE --- */
 let state = {
     currentPage: 'home',
-    currentTheme: 'azure',
-    brandColor: '#00608a',
-    ambientColor: '#0f172a',
+    currentTheme: 'void',
+    brandColor: '#6600ff',
+    ambientColor: '#000000',
     messages: [
       {
         id: 'init',
@@ -61,7 +61,7 @@ const THEMES = {
         },
         gradientClass: 'bg-slate-50',
         isDark: false,
-        brand: '#00608a', // Paper Default
+        brand: '#c800ff', // Paper Default
         ambient: '#ffffff'
     }
 };
