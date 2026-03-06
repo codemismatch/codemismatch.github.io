@@ -1,4 +1,51 @@
-# Theme System
+# CodeMismatch Website
+
+This is a static site built with [Middleman](https://middlemanapp.com/), deployed to GitHub Pages.
+
+## Prerequisites
+
+- Ruby 3.x
+- Bundler
+
+## Development
+
+Install dependencies and start the development server:
+
+```bash
+bundle install
+bundle exec middleman server
+```
+
+Open `http://localhost:4567` in your browser.
+
+## Building
+
+Build the static site:
+
+```bash
+bundle exec middleman build
+```
+
+Output is generated in the `build/` directory.
+
+## Deployment
+
+Deploy to GitHub Pages (pushes to `gh-pages` branch):
+
+```bash
+./bin/deploy
+```
+
+## Branch Mechanics
+
+| Branch | Purpose |
+|--------|---------|
+| `main` | Source code - all development happens here |
+| `gh-pages` | Deployed static site - **do not edit directly** |
+
+The `gh-pages` branch is automatically generated from the `build/` directory during deployment. Never make direct edits to this branch.
+
+## Theme System
 
 This website supports multiple themes that can be easily switched.
 
