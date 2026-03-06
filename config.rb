@@ -42,6 +42,54 @@ page '/*.txt', layout: false
 
 set :haml, { :format => :html5 }
 
+# Enable verbose logging for development server (default behavior)
+configure :development do
+  # Enable request logging - this will show all requests in the console
+  set :logging, true
+  
+  # Add request logging middleware to log all HTTP requests
+  # This will show: IP - - [timestamp] "METHOD /path HTTP/1.1" status size
+  require 'rack'
+  
+  class RequestLogger
+    def initialize(app, logger = $stdout)
+      @app = app
+      @logger = logger
+    end
+
+    def call(env)
+      request = ::Rack::Request.new(env)
+      start_time = Time.now
+      
+      status, headers, response = @app.call(env)
+      
+      duration = ((Time.now - start_time) * 1000).round(2)
+      size = response_body_size(response)
+      
+      log_line = format_log_line(request, status, size, duration)
+      @logger.puts log_line
+      
+      [status, headers, response]
+    end
+
+    private
+
+    def format_log_line(request, status, size, duration)
+      timestamp = Time.now.strftime('%d/%b/%Y:%H:%M:%S %z')
+      "#{request.ip} - - [#{timestamp}] \"#{request.request_method} #{request.fullpath} #{request.env['SERVER_PROTOCOL']}\" #{status} #{size} (#{duration}ms)"
+    end
+
+    def response_body_size(response)
+      return '-' unless response.respond_to?(:each)
+      size = 0
+      response.each { |chunk| size += chunk.bytesize }
+      size
+    end
+  end
+  
+  use RequestLogger
+end
+
 # Theme Configuration
 # Set the active theme here: 'symphony', 'draftr', 'congen', or 'codemismatch'
 # Change this value to switch themes

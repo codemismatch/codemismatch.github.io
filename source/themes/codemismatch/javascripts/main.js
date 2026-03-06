@@ -29,7 +29,7 @@ const THEMES = {
             '--border-color': 'rgba(255,255,255,0.1)',
             '--slider-bg': '#ffffff' // White slider for Void (Dark)
         },
-        gradientClass: 'bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-ambient-900 via-ambient-950 to-black',
+        gradientClass: 'bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-brand-800/30 via-ambient-900 via-ambient-950 to-brand-950/40',
         isDark: true,
         brand: '#6600ff', // Void Default
         ambient: '#000000'
@@ -44,7 +44,7 @@ const THEMES = {
             '--border-color': '#e2e8f0',
             '--slider-bg': '#e2e8f0' // Visible gray for Azure (Light)
         },
-        gradientClass: 'bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-white via-ambient-50 to-ambient-100',
+        gradientClass: 'bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-brand-100/50 via-ambient-100 via-ambient-200 to-brand-200/60',
         isDark: false,
         brand: '#3b82f6', // Azure Default
         ambient: '#f0f9ff'
@@ -59,7 +59,7 @@ const THEMES = {
             '--border-color': '#e2e8f0',
             '--slider-bg': 'rgb(var(--skin-base))' // Default skin base for Paper (Light)
         },
-        gradientClass: 'bg-slate-50',
+        gradientClass: 'bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-ambient-100 via-brand-100/50 via-ambient-200 to-brand-200/60',
         isDark: false,
         brand: '#c800ff', // Paper Default
         ambient: '#ffffff'
@@ -393,6 +393,13 @@ window.updateBrandColor = function(hex) {
     document.getElementById('brand-color-label').innerText = hex;
     const palette = generatePalette(hex, 'brand');
     Object.entries(palette).forEach(([key, value]) => document.documentElement.style.setProperty(key, value));
+    
+    // Update body gradient class to reflect new brand color
+    const body = document.getElementById('app-body');
+    const theme = THEMES[state.currentTheme];
+    if (body && theme) {
+        body.className = `min-h-screen transition-colors duration-500 selection:bg-brand-500 selection:text-white ${theme.gradientClass}`;
+    }
 }
 
 window.updateAmbientColor = function(hex) {
@@ -401,6 +408,13 @@ window.updateAmbientColor = function(hex) {
     document.getElementById('ambient-color-label').innerText = hex;
     const palette = generatePalette(hex, 'ambient');
     Object.entries(palette).forEach(([key, value]) => document.documentElement.style.setProperty(key, value));
+    
+    // Update body gradient class to reflect new ambient color
+    const body = document.getElementById('app-body');
+    const theme = THEMES[state.currentTheme];
+    if (body && theme) {
+        body.className = `min-h-screen transition-colors duration-500 selection:bg-brand-500 selection:text-white ${theme.gradientClass}`;
+    }
 }
 
 window.resetColors = function() {

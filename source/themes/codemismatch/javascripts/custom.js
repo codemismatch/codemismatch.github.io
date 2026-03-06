@@ -52,6 +52,7 @@ const THEMES = {
       '--border-color': '#1a202c',
       '--card-border': '#1a202c'
     },
+    gradientClass: 'bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-brand-800/30 via-ambient-900 via-ambient-950 to-brand-950/40',
     isDark: true
   },
   azure: {
@@ -64,6 +65,7 @@ const THEMES = {
       '--border-color': '#e2e8f0',
       '--card-border': '#e2e8f0'
     },
+    gradientClass: 'bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-brand-100/50 via-ambient-100 via-ambient-200 to-brand-200/60',
     isDark: false
   },
   paper: {
@@ -76,6 +78,7 @@ const THEMES = {
       '--border-color': '#cbd5e1',
       '--card-border': '#e2e8f0'
     },
+    gradientClass: 'bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-ambient-100 via-brand-100/50 via-ambient-200 to-brand-200/60',
     isDark: false
   }
 };
@@ -300,6 +303,13 @@ function updateBrandColor(hex) {
   if (label) label.innerText = hex;
   const palette = generatePalette(hex, 'brand');
   Object.entries(palette).forEach(([key, value]) => document.documentElement.style.setProperty(key, value));
+  
+  // Update body gradient class to reflect new brand color
+  const body = document.getElementById('app-body');
+  const theme = THEMES[state.currentTheme];
+  if (body && theme) {
+    body.className = `min-h-screen transition-colors duration-500 selection:bg-brand-500 selection:text-white ${theme.gradientClass}`;
+  }
 }
 
 function updateAmbientColor(hex) {
@@ -310,6 +320,13 @@ function updateAmbientColor(hex) {
   if (label) label.innerText = hex;
   const palette = generatePalette(hex, 'ambient');
   Object.entries(palette).forEach(([key, value]) => document.documentElement.style.setProperty(key, value));
+  
+  // Update body gradient class to reflect new ambient color
+  const body = document.getElementById('app-body');
+  const theme = THEMES[state.currentTheme];
+  if (body && theme) {
+    body.className = `min-h-screen transition-colors duration-500 selection:bg-brand-500 selection:text-white ${theme.gradientClass}`;
+  }
 }
 
 function resetColors() {
