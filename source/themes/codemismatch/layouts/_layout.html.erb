@@ -510,21 +510,22 @@
                         </div>
                     </div>
 
-                    <form class="bg-skin-base p-8 border border-skin-border" onsubmit="event.preventDefault(); alert('Request transmitted to The Architect.');">
+                    <form id="contact-form" class="bg-skin-base p-8 border border-skin-border">
                         <div class="space-y-6">
                             <div>
                                 <label class="block font-mono text-xs text-brand-600 uppercase mb-2">Full Name</label>
-                                <input type="text" class="w-full bg-skin-surface border border-skin-border p-3 text-skin-text focus:outline-none focus:border-brand-600 transition-colors" placeholder="John Doe">
+                                <input type="text" id="contact-name" class="w-full bg-skin-surface border border-skin-border p-3 text-skin-text focus:outline-none focus:border-brand-600 transition-colors" placeholder="John Doe" required>
                             </div>
                             <div>
                                 <label class="block font-mono text-xs text-brand-600 uppercase mb-2">Work Email</label>
-                                <input type="email" class="w-full bg-skin-surface border border-skin-border p-3 text-skin-text focus:outline-none focus:border-brand-600 transition-colors" placeholder="john@company.com">
+                                <input type="email" id="contact-email" class="w-full bg-skin-surface border border-skin-border p-3 text-skin-text focus:outline-none focus:border-brand-600 transition-colors" placeholder="john@company.com" required>
                             </div>
                             <div>
                                 <label class="block font-mono text-xs text-brand-600 uppercase mb-2">Challenge</label>
-                                <textarea rows="4" class="w-full bg-skin-surface border border-skin-border p-3 text-skin-text focus:outline-none focus:border-brand-600 transition-colors" placeholder="Describe the mismatch..."></textarea>
+                                <textarea id="contact-message" rows="4" class="w-full bg-skin-surface border border-skin-border p-3 text-skin-text focus:outline-none focus:border-brand-600 transition-colors" placeholder="Describe the mismatch..." required></textarea>
                             </div>
-                            <button class="inline-flex items-center justify-center font-mono font-medium tracking-wide transition-all duration-200 focus:outline-none uppercase bg-brand-600 text-white hover:bg-brand-500 border border-transparent shadow-[0_0_15px_rgba(37,99,235,0.3)] w-full h-12 text-sm">Submit Request</button>
+                            <button type="submit" id="contact-submit" class="inline-flex items-center justify-center font-mono font-medium tracking-wide transition-all duration-200 focus:outline-none uppercase bg-brand-600 text-white hover:bg-brand-500 border border-transparent shadow-[0_0_15px_rgba(37,99,235,0.3)] w-full h-12 text-sm">Submit Request</button>
+                            <div id="contact-status" class="mt-4 text-center font-mono text-sm"></div>
                         </div>
                     </form>
                 </div>
@@ -875,6 +876,51 @@
 
       ga('create', 'UA-99324257-1', 'auto');
       ga('send', 'pageview');
+    </script>
+
+    <script>
+      const contactForm = document.getElementById('contact-form');
+      if (contactForm) {
+        contactForm.addEventListener('submit', async function(e) {
+          e.preventDefault(); // Stop page reload
+
+          const submitButton = document.getElementById('contact-submit');
+          const statusDiv = document.getElementById('contact-status');
+          
+          const name = document.getElementById('contact-name').value;
+          const email = document.getElementById('contact-email').value;
+          const message = document.getElementById('contact-message').value;
+
+          submitButton.disabled = true;
+          submitButton.innerText = "Sending...";
+          statusDiv.innerText = "";
+
+          try {
+            // *** DEV URL (For testing locally with Wrangler) ***
+            // const workerUrl = 'http://localhost:8787'; 
+            const workerUrl = 'https://contact-form-worker.neerajlivewire.workers.dev'; 
+            const response = await fetch(workerUrl, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ name, email, message })
+            });
+
+            if (response.ok) {
+              statusDiv.innerText = "Message sent successfully!";
+              statusDiv.style.color = "rgb(22, 163, 74)"; // tailwind text-green-600
+              contactForm.reset();
+            } else {
+              throw new Error("Failed to send");
+            }
+          } catch (error) {
+            statusDiv.innerText = "An error occurred. Please try again.";
+            statusDiv.style.color = "rgb(220, 38, 38)"; // tailwind text-red-600
+          } finally {
+            submitButton.disabled = false;
+            submitButton.innerText = "Submit Request";
+          }
+        });
+      }
     </script>
 </body>
 </html>
