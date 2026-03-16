@@ -96,6 +96,7 @@ document.addEventListener('DOMContentLoaded', function () {
     setTheme(state.currentTheme);
   }
   resetColors();
+  renderStaticLoadingWave();
 
   // Handle initial page from URL hash
   const hash = window.location.hash.slice(1) || 'home';
@@ -344,6 +345,52 @@ function resetColors() {
   }
 }
 
+function renderStaticLoadingWave() {
+  const canvas = document.getElementById('loading-wave-canvas');
+  if (!canvas) return;
+
+  const ctx = canvas.getContext('2d');
+  const width = 600;
+  const height = 300;
+
+  canvas.width = width * window.devicePixelRatio;
+  canvas.height = height * window.devicePixelRatio;
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+
+  const yAxis = height / 2;
+  const time = 0.5;
+
+  ctx.font = '700 11px "IBM Plex Mono", monospace';
+  ctx.textBaseline = 'middle';
+
+  const waves = [
+    { timeModifier: 1, lineWidth: 2, amplitude: 40, wavelength: 180, gradient: ['rgba(59, 130, 246, 0.6)', 'rgba(6, 182, 212, 0.6)', 'rgba(168, 85, 247, 0.6)'] },
+    { timeModifier: 0.8, lineWidth: 1.5, amplitude: 80, wavelength: 220, gradient: ['rgba(30, 58, 138, 0.5)', 'rgba(37, 99, 235, 0.5)'] },
+    { timeModifier: 0.6, lineWidth: 1, amplitude: 60, wavelength: 200, gradient: ['rgba(88, 28, 135, 0.4)', 'rgba(124, 58, 237, 0.4)'] }
+  ];
+
+  waves.forEach((wave) => {
+    ctx.beginPath();
+    ctx.lineWidth = wave.lineWidth;
+    const gradient = ctx.createLinearGradient(0, 0, width, 0);
+    wave.gradient.forEach((color, i) => gradient.addColorStop(i / (wave.gradient.length - 1), color));
+    ctx.strokeStyle = gradient;
+
+    for (let x = 0; x < width; x += 5) {
+      const position = x / width;
+      const decay = Math.pow(position, 1.4);
+      const localAmp = wave.amplitude * decay;
+
+      const k = (2 * Math.PI) / wave.wavelength;
+      const y = yAxis + Math.sin(k * x + time * wave.timeModifier) * localAmp;
+
+      x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+  });
+}
+
 /* WAVE ANIMATION */
 function clampWaveParam(key, value) {
   const limits = WAVE_LIMITS[key];
@@ -383,6 +430,13 @@ function setupWaveAnimation() {
   }
   window.addEventListener('resize', resize);
   resize();
+
+  setTimeout(() => {
+    const loadingOverlay = document.getElementById('loading-overlay');
+    if (loadingOverlay) {
+      loadingOverlay.classList.add('hidden');
+    }
+  }, 100);
 
   // Controls + labels (initialized lazily after first frame)
   let sliderBindings;
@@ -930,3 +984,4 @@ window.updateAmbientColor = updateAmbientColor;
 window.resetColors = resetColors;
 window.handleChatSend = handleChatSend;
 window.applyWavePrompt = applyWavePrompt;
+window.renderStaticLoadingWave = renderStaticLoadingWave;
