@@ -359,10 +359,8 @@ function renderStaticLoadingWave() {
   ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
 
   const yAxis = height / 2;
-  const time = 0.5;
-
-  ctx.font = '700 11px "IBM Plex Mono", monospace';
-  ctx.textBaseline = 'middle';
+  let animTime = 0;
+  let animationId;
 
   const waves = [
     { timeModifier: 1, lineWidth: 2, amplitude: 40, wavelength: 180, gradient: ['rgba(59, 130, 246, 0.6)', 'rgba(6, 182, 212, 0.6)', 'rgba(168, 85, 247, 0.6)'] },
@@ -370,25 +368,38 @@ function renderStaticLoadingWave() {
     { timeModifier: 0.6, lineWidth: 1, amplitude: 60, wavelength: 200, gradient: ['rgba(88, 28, 135, 0.4)', 'rgba(124, 58, 237, 0.4)'] }
   ];
 
-  waves.forEach((wave) => {
-    ctx.beginPath();
-    ctx.lineWidth = wave.lineWidth;
-    const gradient = ctx.createLinearGradient(0, 0, width, 0);
-    wave.gradient.forEach((color, i) => gradient.addColorStop(i / (wave.gradient.length - 1), color));
-    ctx.strokeStyle = gradient;
+  function renderFrame() {
+    ctx.clearRect(0, 0, width, height);
+    
+    waves.forEach((wave) => {
+      ctx.beginPath();
+      ctx.lineWidth = wave.lineWidth;
+      const gradient = ctx.createLinearGradient(0, 0, width, 0);
+      wave.gradient.forEach((color, i) => gradient.addColorStop(i / (wave.gradient.length - 1), color));
+      ctx.strokeStyle = gradient;
 
-    for (let x = 0; x < width; x += 5) {
-      const position = x / width;
-      const decay = Math.pow(position, 1.4);
-      const localAmp = wave.amplitude * decay;
+      for (let x = 0; x < width; x += 5) {
+        const position = x / width;
+        const decay = Math.pow(position, 1.4);
+        const localAmp = wave.amplitude * decay;
 
-      const k = (2 * Math.PI) / wave.wavelength;
-      const y = yAxis + Math.sin(k * x + time * wave.timeModifier) * localAmp;
+        const k = (2 * Math.PI) / wave.wavelength;
+        const y = yAxis + Math.sin(k * x + animTime * wave.timeModifier) * localAmp;
 
-      x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-    }
-    ctx.stroke();
-  });
+        x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    });
+
+    animTime += 0.03;
+    animationId = requestAnimationFrame(renderFrame);
+  }
+
+  renderFrame();
+
+  return () => {
+    if (animationId) cancelAnimationFrame(animationId);
+  };
 }
 
 /* WAVE ANIMATION */
@@ -431,12 +442,25 @@ function setupWaveAnimation() {
   window.addEventListener('resize', resize);
   resize();
 
-  setTimeout(() => {
-    const loadingOverlay = document.getElementById('loading-overlay');
-    if (loadingOverlay) {
-      loadingOverlay.classList.add('hidden');
-    }
-  }, 100);
+  const loadingOverlay = document.getElementById('loading-overlay');
+  const loadingStartTime = Date.now();
+  const minLoadingDuration = 2000;
+
+  const hideLoadingOverlay = () => {
+    const elapsed = Date.now() - loadingStartTime;
+    const remaining = Math.max(0, minLoadingDuration - elapsed);
+
+    setTimeout(() => {
+      if (loadingOverlay) {
+        loadingOverlay.classList.add('fade-content');
+        setTimeout(() => {
+          loadingOverlay.classList.add('hidden');
+        }, 800);
+      }
+    }, remaining);
+  };
+
+  hideLoadingOverlay();
 
   // Controls + labels (initialized lazily after first frame)
   let sliderBindings;
