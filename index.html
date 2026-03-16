@@ -95,6 +95,11 @@
       #loading-overlay.hidden {
         opacity: 0;
         pointer-events: none;
+        transition: opacity 1s ease-out;
+      }
+      #loading-overlay.fade-content {
+        opacity: 0.3;
+        transition: opacity 0.8s ease-out;
       }
       #loading-wave-canvas {
         image-rendering: crisp-edges;
