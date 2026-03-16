@@ -89,7 +89,7 @@
       }
       
       body {
-        background-color: var(--bg-base);
+        background-color: #020408;
         color: var(--text-main);
         transition: background-color 0.5s ease, color 0.5s ease;
       }
@@ -140,6 +140,24 @@
 <link rel="stylesheet" href="/index.css">
 </head>
 <body class="min-h-screen transition-colors duration-500 selection:bg-brand-500 selection:text-white" id="app-body">
+
+    <!-- Loading Overlay (must be first element in body) -->
+    <div id="loading-overlay" class="fixed inset-0 z-[9999] flex flex-col items-center justify-center transition-opacity duration-700 ease-out">
+        <div class="flex items-center tracking-tighter select-none mb-8">
+            <span class="font-sans font-light text-6xl text-white">Cod</span>
+            <div class="mx-1 relative flex items-center justify-center h-16 w-14">
+                <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full text-brand-600">
+                    <path d="M2 6H18" stroke="currentColor" stroke-width="2" stroke-linecap="square" />
+                    <path d="M2 10H18" stroke="currentColor" stroke-width="2" stroke-linecap="square" />
+                    <path d="M2 14H18" stroke="currentColor" stroke-width="2" stroke-linecap="square" />
+                    <path d="M12 3L8 17" stroke="currentColor" stroke-width="2" stroke-linecap="square" />
+                </svg>
+            </div>
+            <span class="font-sans font-light text-6xl text-white">mismatch</span>
+        </div>
+        <canvas id="loading-wave-canvas" class="w-[600px] h-[300px] opacity-50"></canvas>
+        <p class="font-mono text-sm text-white/60 mt-6 tracking-widest uppercase">Initializing</p>
+    </div>
 
     <!-- Navbar -->
     <nav class="fixed top-0 left-0 w-full z-50 border-b border-skin-border bg-skin-surface/90 backdrop-blur-md transition-colors duration-500">
@@ -939,23 +957,6 @@
         });
       }
     </script>
-    <!-- Loading Overlay -->
-    <div id="loading-overlay" class="fixed inset-0 z-[9999] flex flex-col items-center justify-center transition-opacity duration-700 ease-out">
-        <div class="flex items-center tracking-tighter select-none mb-8">
-            <span class="font-sans font-light text-6xl text-white">Cod</span>
-            <div class="mx-1 relative flex items-center justify-center h-16 w-14">
-                <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full text-brand-600">
-                    <path d="M2 6H18" stroke="currentColor" stroke-width="2" stroke-linecap="square" />
-                    <path d="M2 10H18" stroke="currentColor" stroke-width="2" stroke-linecap="square" />
-                    <path d="M2 14H18" stroke="currentColor" stroke-width="2" stroke-linecap="square" />
-                    <path d="M12 3L8 17" stroke="currentColor" stroke-width="2" stroke-linecap="square" />
-                </svg>
-            </div>
-            <span class="font-sans font-light text-6xl text-white">mismatch</span>
-        </div>
-        <canvas id="loading-wave-canvas" class="w-[600px] h-[300px] opacity-50"></canvas>
-        <p class="font-mono text-sm text-white/60 mt-6 tracking-widest uppercase">Initializing</p>
-    </div>
 
 </body>
 </html>
