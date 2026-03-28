@@ -90,7 +90,7 @@
       }
       
       body {
-        background-color: var(--bg-base);
+        background-color: #020408;
         color: var(--text-main);
         transition: background-color 0.5s ease, color 0.5s ease;
       }
@@ -107,6 +107,23 @@
       @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
       
       .hidden-important { display: none !important; }
+
+      /* Loading Overlay Styles */
+      #loading-overlay {
+        background: linear-gradient(135deg, #020408 0%, #0a0f1a 100%);
+      }
+      #loading-overlay.hidden {
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 1s ease-out;
+      }
+      #loading-overlay.fade-content {
+        opacity: 0.3;
+        transition: opacity 0.8s ease-out;
+      }
+      #loading-wave-canvas {
+        image-rendering: crisp-edges;
+      }
     </style>
 <script type="importmap">
 {
@@ -125,6 +142,24 @@
 <%= partial "shared/google_analytics" %>
 </head>
 <body class="min-h-screen transition-colors duration-500 selection:bg-brand-500 selection:text-white" id="app-body">
+
+    <!-- Loading Overlay (must be first element in body) -->
+    <div id="loading-overlay" class="fixed inset-0 z-[9999] flex flex-col items-center justify-center transition-opacity duration-700 ease-out">
+        <div class="flex items-center tracking-tighter select-none mb-8">
+            <span class="font-sans font-light text-6xl text-white">Cod</span>
+            <div class="mx-1 relative flex items-center justify-center h-16 w-14">
+                <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full text-brand-600">
+                    <path d="M2 6H18" stroke="currentColor" stroke-width="2" stroke-linecap="square" />
+                    <path d="M2 10H18" stroke="currentColor" stroke-width="2" stroke-linecap="square" />
+                    <path d="M2 14H18" stroke="currentColor" stroke-width="2" stroke-linecap="square" />
+                    <path d="M12 3L8 17" stroke="currentColor" stroke-width="2" stroke-linecap="square" />
+                </svg>
+            </div>
+            <span class="font-sans font-light text-6xl text-white">mismatch</span>
+        </div>
+        <canvas id="loading-wave-canvas" class="w-[600px] h-[300px] opacity-50"></canvas>
+        <p class="font-mono text-sm text-white/60 mt-6 tracking-widest uppercase">Initializing</p>
+    </div>
 
     <!-- Navbar -->
     <nav class="fixed top-0 left-0 w-full z-50 border-b border-skin-border bg-skin-surface/90 backdrop-blur-md transition-colors duration-500">
@@ -938,5 +973,6 @@
         });
       }
     </script>
+
 </body>
 </html>
