@@ -16,6 +16,18 @@ function jsonResponse(data, status, origin) {
   return new Response(status === 204 ? null : JSON.stringify(data), { status, headers });
 }
 
+function eventStreamResponse(body, origin) {
+  const headers = {
+    "Content-Type": "text/event-stream; charset=utf-8",
+    "Cache-Control": "no-cache, no-transform",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type",
+    "Vary": "Origin"
+  };
+  if (ALLOWED_ORIGINS.has(origin)) headers["Access-Control-Allow-Origin"] = origin;
+  return new Response(body, { status: 200, headers });
+}
+
 export default {
   async fetch(request, env) {
     const origin = request.headers.get("Origin") || "";
@@ -52,7 +64,7 @@ export default {
               model,
               messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages],
               max_tokens: 800,
-              stream: false
+              stream: true
             })
           });
           if (!response.ok) {
@@ -62,9 +74,9 @@ export default {
             if (model === "glm-4.7-flash" && ["1302", "1305"].includes(providerCode)) continue;
             return jsonResponse({ error: "The free GLM models are temporarily unavailable." }, 503, origin);
           }
-          const result = await response.json();
-          const text = result.choices?.[0]?.message?.content;
-          return jsonResponse({ text: typeof text === "string" && text ? text : "I could not formulate a response. Please try again." }, 200, origin);
+          if (!response.body) return jsonResponse({ error: "The model did not provide a response stream." }, 502, origin);
+          console.log("Z.ai chat stream started", model);
+          return eventStreamResponse(response.body, origin);
         }
         return jsonResponse({ error: "The free GLM models are temporarily unavailable." }, 503, origin);
       } catch (error) {
