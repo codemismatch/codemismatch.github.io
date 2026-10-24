@@ -170,11 +170,10 @@ async function generateOracleResponse(history, newMessage) {
     }));
   messages.push({ role: 'user', content: newMessage });
 
-  const model = document.getElementById('chat-model')?.value;
   const response = await fetch('https://codemismatch-contact-form.pankajdoharey.workers.dev/chat', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ messages, model })
+    body: JSON.stringify({ messages })
   });
   if (!response.ok) throw new Error('Architect request failed');
   const result = await response.json();
