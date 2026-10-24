@@ -108,6 +108,143 @@ function scrollToBottom() {
     container.scrollTop = container.scrollHeight;
 }
 
+function escapeMarkdownHtml(value) {
+    return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function renderInlineMarkdown(source) {
+    const fragments = [];
+    let text = String(source).replace(/`([^`\n]+)`/g, (_, code) => {
+        const index = fragments.push(`<code class="px-1 py-0.5 bg-skin-surface-hover text-brand-600 border border-skin-border rounded">${escapeMarkdownHtml(code)}</code>`) - 1;
+        return `CMINLINE${index}TOKEN`;
+    });
+    text = text.replace(/\[([^\]]+)\]\(((?:https?:\/\/|mailto:)[^)\s]+)\)/gi, (_, label, url) => {
+        const index = fragments.push(`<a href="${escapeMarkdownHtml(url)}" target="_blank" rel="noopener noreferrer" class="text-brand-600 underline decoration-brand-600/50 underline-offset-2 hover:opacity-80">${escapeMarkdownHtml(label)}</a>`) - 1;
+        return `CMINLINE${index}TOKEN`;
+    });
+
+    text = escapeMarkdownHtml(text)
+        .replace(/\*\*(.+?)\*\*/g, '<strong class="font-semibold text-skin-text">$1</strong>')
+        .replace(/~~(.+?)~~/g, '<del class="text-skin-muted">$1</del>')
+        .replace(/(?<!\*)\*([^*\n]+)\*(?!\*)/g, '<em>$1</em>')
+        .replace(/(?<!_)_([^_\n]+)_(?!_)/g, '<em>$1</em>');
+
+    return text.replace(/CMINLINE(\d+)TOKEN/g, (_, index) => fragments[Number(index)] || '');
+}
+
+function renderMarkdownListItem(source) {
+    return String(source).split('\n').map((line) => {
+        const nestedItem = line.match(/^\s+[-*+]\s+(.+)$/);
+        if (nestedItem) {
+            return `<span class="block pl-4"><span class="text-brand-600">•</span> ${renderInlineMarkdown(nestedItem[1])}</span>`;
+        }
+        return renderInlineMarkdown(line);
+    }).join('<br>');
+}
+
+function renderMarkdown(source) {
+    const lines = String(source).replace(/\r\n?/g, '\n').split('\n');
+    const blocks = [];
+    let paragraph = [];
+    const flushParagraph = () => {
+        if (!paragraph.length) return;
+        blocks.push(`<p class="mb-3 last:mb-0 leading-relaxed">${paragraph.map(renderInlineMarkdown).join('<br>')}</p>`);
+        paragraph = [];
+    };
+
+    for (let i = 0; i < lines.length;) {
+        const line = lines[i];
+        if (!line.trim()) {
+            flushParagraph();
+            i++;
+            continue;
+        }
+
+        if (/^\s*```/.test(line)) {
+            flushParagraph();
+            const code = [];
+            i++;
+            while (i < lines.length && !/^\s*```/.test(lines[i])) code.push(lines[i++]);
+            if (i < lines.length) i++;
+            blocks.push(`<pre class="my-3 max-w-full overflow-x-auto rounded border border-skin-border bg-skin-surface-hover p-3 text-skin-text"><code>${escapeMarkdownHtml(code.join('\n'))}</code></pre>`);
+            continue;
+        }
+
+        const heading = line.match(/^\s*(#{1,6})\s+(.+?)\s*#*\s*$/);
+        if (heading) {
+            flushParagraph();
+            const level = heading[1].length;
+            const size = level <= 2 ? 'text-lg' : 'text-base';
+            blocks.push(`<h${level} class="mb-2 mt-4 ${size} font-semibold text-skin-text">${renderInlineMarkdown(heading[2])}</h${level}>`);
+            i++;
+            continue;
+        }
+
+        if (/^\s*(?:[-*_]\s*){3,}$/.test(line)) {
+            flushParagraph();
+            blocks.push('<hr class="my-3 border-skin-border">');
+            i++;
+            continue;
+        }
+
+        if (/^\s*>/.test(line)) {
+            flushParagraph();
+            const quote = [];
+            while (i < lines.length && /^\s*>/.test(lines[i])) quote.push(lines[i++].replace(/^\s*>\s?/, ''));
+            blocks.push(`<blockquote class="my-3 border-l-2 border-brand-600/50 pl-3 text-skin-muted">${renderMarkdown(quote.join('\n'))}</blockquote>`);
+            continue;
+        }
+
+        const firstListItem = line.match(/^(\s*)([-*+]|\d+[.)])\s+(.+)$/);
+        if (firstListItem) {
+            flushParagraph();
+            const baseIndent = firstListItem[1].length;
+            const ordered = /^\d/.test(firstListItem[2]);
+            const items = [];
+            while (i < lines.length) {
+                const item = lines[i].match(/^(\s*)([-*+]|\d+[.)])\s+(.+)$/);
+                if (item && item[1].length === baseIndent && /^\d/.test(item[2]) === ordered) {
+                    let content = item[3];
+                    i++;
+                        while (i < lines.length && lines[i].trim()) {
+                            const nextItem = lines[i].match(/^(\s*)([-*+]|\d+[.)])\s+/);
+                            const indent = lines[i].match(/^\s*/)[0].length;
+                            if (indent < baseIndent + 2 || (nextItem && nextItem[1].length <= baseIndent)) break;
+                            content += `\n${lines[i]}`;
+                            i++;
+                    }
+                    items.push(`<li class="pl-1">${renderMarkdownListItem(content)}</li>`);
+                    continue;
+                }
+                if (!lines[i].trim()) {
+                    let next = i + 1;
+                    while (next < lines.length && !lines[next].trim()) next++;
+                    const nextItem = lines[next]?.match(/^(\s*)([-*+]|\d+[.)])\s+(.+)$/);
+                    if (nextItem && nextItem[1].length === baseIndent && /^\d/.test(nextItem[2]) === ordered) {
+                        i = next;
+                        continue;
+                    }
+                }
+                break;
+            }
+            const tag = ordered ? 'ol' : 'ul';
+            const marker = ordered ? 'list-decimal' : 'list-disc';
+            blocks.push(`<${tag} class="mb-3 space-y-1 ${marker} pl-6 marker:text-brand-600">${items.join('')}</${tag}>`);
+            continue;
+        }
+
+        paragraph.push(line);
+        i++;
+    }
+    flushParagraph();
+    return blocks.join('');
+}
+
 function appendMessage(role, text) {
     const container = document.getElementById('chat-messages');
     const isModel = role === 'model';
@@ -119,10 +256,10 @@ function appendMessage(role, text) {
         <div class="flex-shrink-0 w-8 h-8 flex items-center justify-center border ${isModel ? 'border-brand-600 bg-brand-600/10 text-brand-600' : 'border-skin-border bg-skin-base text-skin-muted'}">
             <i data-lucide="${isModel ? 'activity' : 'user'}" class="w-4 h-4"></i>
         </div>
-        <div class="max-w-[85%] whitespace-pre-wrap font-mono text-sm p-4 border shadow-sm ${isModel ? 'border-brand-600/30 bg-skin-base text-skin-text' : 'border-skin-border bg-skin-surface-hover text-skin-text'}">
+        <div class="max-w-[85%] break-words font-mono text-sm p-4 border shadow-sm ${isModel ? 'border-brand-600/30 bg-skin-base text-skin-text' : 'border-skin-border bg-skin-surface-hover text-skin-text'}">
         </div>
     `;
-    div.lastElementChild.textContent = String(text);
+    div.lastElementChild.innerHTML = renderMarkdown(text);
     container.appendChild(div);
     lucide.createIcons();
     scrollToBottom();
@@ -205,7 +342,7 @@ window.handleChatSend = async function() {
             onToken: token => {
                 if (!answerBubble) answerBubble = appendMessage('model', '');
                 answer += token;
-                answerBubble.textContent = answer;
+                answerBubble.innerHTML = renderMarkdown(answer);
                 status.textContent = 'The Architect is responding…';
                 scrollToBottom();
             }
@@ -216,14 +353,14 @@ window.handleChatSend = async function() {
             state.callOfferActive = true;
         }
         if (!answerBubble) answerBubble = appendMessage('model', answer);
-        else answerBubble.textContent = answer;
+        else answerBubble.innerHTML = renderMarkdown(answer);
         state.messages.push({ id: Date.now()+1, role: 'model', text: answer });
     } catch (err) {
         console.error(err);
         const message = err.callRequest
             ? "I couldn't send the follow-up request just now. We can keep chatting here; please try sharing your email again in a moment."
             : "The Architect is temporarily unavailable. Please try again.";
-        if (answerBubble) answerBubble.textContent = message;
+        if (answerBubble) answerBubble.innerHTML = renderMarkdown(message);
         else appendMessage('model', message);
     } finally {
         loading.classList.add('hidden');
