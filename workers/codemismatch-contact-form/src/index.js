@@ -13,7 +13,7 @@ function jsonResponse(data, status, origin) {
     "Vary": "Origin"
   };
   if (ALLOWED_ORIGINS.has(origin)) headers["Access-Control-Allow-Origin"] = origin;
-  return new Response(JSON.stringify(data), { status, headers });
+  return new Response(status === 204 ? null : JSON.stringify(data), { status, headers });
 }
 
 export default {
