@@ -158,6 +158,9 @@ window.handleChatSend = async function() {
                 status.textContent = 'CONNECTED. WAITING_FOR_FIRST_TOKEN...';
                 answerBubble = appendMessage('model', '');
             },
+            onProgress: () => {
+                if (!answer) status.textContent = 'ARCHITECT_IS_THINKING...';
+            },
             onToken: token => {
                 if (!answerBubble) answerBubble = appendMessage('model', '');
                 answer += token;
@@ -218,6 +221,7 @@ async function generateOracleResponse(history, newMessage, callbacks) {
         let chunk;
         try { chunk = JSON.parse(payload); } catch { continue; }
         const content = chunk.choices?.[0]?.delta?.content;
+        if (chunk.choices?.[0]?.delta?.reasoning_content) callbacks.onProgress();
         if (typeof content === 'string' && content) callbacks.onToken(content);
         else if (Array.isArray(content)) {
           for (const item of content) if (typeof item.text === 'string') callbacks.onToken(item.text);

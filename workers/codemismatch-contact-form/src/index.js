@@ -64,6 +64,7 @@ export default {
               model,
               messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages],
               max_tokens: 800,
+              ...(model === "glm-4.7-flash" ? { thinking: { type: "disabled" } } : {}),
               stream: true
             })
           });
