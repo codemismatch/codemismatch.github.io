@@ -110,18 +110,18 @@ function appendMessage(role, text) {
     const div = document.createElement('div');
     div.className = `flex gap-4 ${isModel ? 'flex-row' : 'flex-row-reverse'} animate-fade-in`;
     
-    const safeText = String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>");
     div.innerHTML = `
         <div class="flex-shrink-0 w-8 h-8 flex items-center justify-center border ${isModel ? 'border-brand-600 bg-brand-600/10 text-brand-600' : 'border-skin-border bg-skin-base text-skin-muted'}">
             <i data-lucide="${isModel ? 'activity' : 'user'}" class="w-4 h-4"></i>
         </div>
-        <div class="max-w-[85%] font-mono text-sm p-4 border shadow-sm ${isModel ? 'border-brand-600/30 bg-skin-base text-skin-text' : 'border-skin-border bg-skin-surface-hover text-skin-text'}">
-            ${safeText}
+        <div class="max-w-[85%] whitespace-pre-wrap font-mono text-sm p-4 border shadow-sm ${isModel ? 'border-brand-600/30 bg-skin-base text-skin-text' : 'border-skin-border bg-skin-surface-hover text-skin-text'}">
         </div>
     `;
+    div.lastElementChild.textContent = String(text);
     container.appendChild(div);
     lucide.createIcons();
     scrollToBottom();
+    return div.lastElementChild;
 }
 
 function renderChat() {
@@ -130,10 +130,12 @@ function renderChat() {
     state.messages.forEach(msg => appendMessage(msg.role, msg.text));
 }
 
+let chatRequestActive = false;
 window.handleChatSend = async function() {
     const inputEl = document.getElementById('chat-input');
     const text = inputEl.value.trim();
-    if (!text) return;
+    if (!text || chatRequestActive) return;
+    chatRequestActive = true;
     
     // Add User Message
     state.messages.push({ id: Date.now(), role: 'user', text });
@@ -141,26 +143,45 @@ window.handleChatSend = async function() {
     inputEl.value = '';
     
     // Show Loading
-    document.getElementById('chat-loading').classList.remove('hidden');
+    const loading = document.getElementById('chat-loading');
+    const status = document.getElementById('chat-status');
+    loading.classList.remove('hidden');
+    status.textContent = 'CONNECTING_TO_FREE_GLM...';
     scrollToBottom();
     
+    let answer = '';
+    let answerBubble = null;
     try {
-        // Call Gemini
         const history = state.messages.map(m => ({ role: m.role, text: m.text }));
-        const responseText = await generateOracleResponse(history, text);
-        
-        // Add Model Message
-        state.messages.push({ id: Date.now()+1, role: 'model', text: responseText });
-        appendMessage('model', responseText);
+        await generateOracleResponse(history, text, {
+            onConnected: () => {
+                status.textContent = 'CONNECTED. WAITING_FOR_FIRST_TOKEN...';
+                answerBubble = appendMessage('model', '');
+            },
+            onToken: token => {
+                if (!answerBubble) answerBubble = appendMessage('model', '');
+                answer += token;
+                answerBubble.textContent = answer;
+                status.textContent = 'ARCHITECT_IS_RESPONDING...';
+                scrollToBottom();
+            }
+        });
+        if (!answer.trim()) answer = 'The Architect could not formulate a response. Please try again.';
+        if (!answerBubble) answerBubble = appendMessage('model', answer);
+        else answerBubble.textContent = answer;
+        state.messages.push({ id: Date.now()+1, role: 'model', text: answer });
     } catch (err) {
         console.error(err);
-        appendMessage('model', "The Architect is temporarily unavailable. Please try again.");
+        const message = "The Architect is temporarily unavailable. Please try again.";
+        if (answerBubble) answerBubble.textContent = message;
+        else appendMessage('model', message);
     } finally {
-        document.getElementById('chat-loading').classList.add('hidden');
+        loading.classList.add('hidden');
+        chatRequestActive = false;
     }
 }
 
-async function generateOracleResponse(history, newMessage) {
+async function generateOracleResponse(history, newMessage, callbacks) {
   const messages = history
     .slice(0, -1)
     .slice(-10)
@@ -175,9 +196,36 @@ async function generateOracleResponse(history, newMessage) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ messages })
   });
-  if (!response.ok) throw new Error('Architect request failed');
-  const result = await response.json();
-  return result.text || 'The Architect could not formulate a response. Please try again.';
+  if (!response.ok) {
+    const result = await response.json().catch(() => ({}));
+    throw new Error(result.error || 'Architect request failed');
+  }
+  if (!response.body) throw new Error('Streaming is not supported by this browser');
+  callbacks.onConnected();
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+  while (true) {
+    const { value, done } = await reader.read();
+    buffer += decoder.decode(value || new Uint8Array(), { stream: !done });
+    const events = buffer.split(/\r?\n\r?\n/);
+    buffer = events.pop() || '';
+    for (const event of events) {
+      for (const line of event.split(/\r?\n/)) {
+        if (!line.startsWith('data:')) continue;
+        const payload = line.slice(5).trim();
+        if (!payload || payload === '[DONE]') continue;
+        let chunk;
+        try { chunk = JSON.parse(payload); } catch { continue; }
+        const content = chunk.choices?.[0]?.delta?.content;
+        if (typeof content === 'string' && content) callbacks.onToken(content);
+        else if (Array.isArray(content)) {
+          for (const item of content) if (typeof item.text === 'string') callbacks.onToken(item.text);
+        }
+      }
+    }
+    if (done) break;
+  }
 }
 
 /* --- NAVIGATION --- */
