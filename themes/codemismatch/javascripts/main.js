@@ -1,7 +1,3 @@
-import { GoogleGenAI } from "https://esm.sh/@google/genai";
-
-/* --- CONFIG --- */
-const API_KEY = ''; // ENTER YOUR GEMINI API KEY HERE
 
 /* --- STATE --- */
 let state = {
@@ -114,13 +110,13 @@ function appendMessage(role, text) {
     const div = document.createElement('div');
     div.className = `flex gap-4 ${isModel ? 'flex-row' : 'flex-row-reverse'} animate-fade-in`;
     
-    // Note: In a real app we would sanitize 'text' to prevent XSS
+    const safeText = String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>");
     div.innerHTML = `
         <div class="flex-shrink-0 w-8 h-8 flex items-center justify-center border ${isModel ? 'border-brand-600 bg-brand-600/10 text-brand-600' : 'border-skin-border bg-skin-base text-skin-muted'}">
             <i data-lucide="${isModel ? 'activity' : 'user'}" class="w-4 h-4"></i>
         </div>
         <div class="max-w-[85%] font-mono text-sm p-4 border shadow-sm ${isModel ? 'border-brand-600/30 bg-skin-base text-skin-text' : 'border-skin-border bg-skin-surface-hover text-skin-text'}">
-            ${text.replace(/\n/g, '<br>')}
+            ${safeText}
         </div>
     `;
     container.appendChild(div);
@@ -158,45 +154,34 @@ window.handleChatSend = async function() {
         appendMessage('model', responseText);
     } catch (err) {
         console.error(err);
-        appendMessage('model', "Error: Signal lost. Please verify API Key.");
+        appendMessage('model', "The Architect is temporarily unavailable. Please try again.");
     } finally {
         document.getElementById('chat-loading').classList.add('hidden');
     }
 }
 
 async function generateOracleResponse(history, newMessage) {
-  if (!API_KEY) {
-    return "Error: Uplink severed. (API_KEY missing in source code)";
-  }
+  const messages = history
+    .slice(0, -1)
+    .slice(-10)
+    .map(message => ({
+      role: message.role === 'model' ? 'assistant' : 'user',
+      content: message.text
+    }));
+  messages.push({ role: 'user', content: newMessage });
 
-  try {
-    const ai = new GoogleGenAI({ apiKey: API_KEY });
-    const model = 'gemini-2.5-flash';
-    
-    const chat = ai.chats.create({
-      model: model,
-      config: {
-        systemInstruction: `You are The Architect, CodeMismatch’s AI consulting advisor. CodeMismatch helps businesses use AI and automation to improve real operations. Our current target market is accounting firms. Help them identify and design practical automations for intake, document collection and classification, bookkeeping workflows, reconciliations, month-end close, reporting, client communication, and handoffs between staff and systems. Treat client data, confidentiality, auditability, and human review as core design requirements. Recommend a staged approach: understand the workflow and constraints, identify a high-value and low-risk starting point, map integrations and data flows, then define controls, rollout, and measurable outcomes. Ask focused questions when details are missing; state assumptions; give concrete options and trade-offs; do not promise capabilities, integrations, results, or client experience that CodeMismatch has not confirmed. You may also advise on broader AI consulting, enterprise architecture, legacy modernization, and cloud strategy when relevant. Keep answers clear, practical, and professional, with minimal jargon.`,
-      },
-      history: history.slice(0, -1).map(h => ({ // Exclude the very last user message we just added
-        role: h.role,
-        parts: [{ text: h.text }]
-      }))
-    });
-
-    const result = await chat.sendMessage({
-      message: newMessage
-    });
-
-    return result.text || "Computing... Signal unstable.";
-
-  } catch (error) {
-    console.error("Gemini Error:", error);
-    return "Critical Error: Logic gate failure. Re-initializing.";
-  }
-};
+  const response = await fetch('https://codemismatch-contact-form.pankajdoharey.workers.dev/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ messages })
+  });
+  if (!response.ok) throw new Error('Architect request failed');
+  const result = await response.json();
+  return result.text || 'The Architect could not formulate a response. Please try again.';
+}
 
 /* --- NAVIGATION --- */
+
 function navigateToImpl(pageId, pushState) {
     state.currentPage = pageId;
     
