@@ -55,7 +55,9 @@ export default {
           })
         });
         if (!response.ok) {
-          console.error("Z.ai chat request failed", response.status);
+          const failure = await response.json().catch(() => ({}));
+          const providerCode = failure.error?.code || failure.code || "unknown";
+          console.error("Z.ai chat request failed", response.status, String(providerCode).slice(0, 40));
           return jsonResponse({ error: "The free GLM model is temporarily unavailable." }, 503, origin);
         }
         const result = await response.json();
