@@ -1,10 +1,15 @@
 
+const CHAT_WORKER_URL = 'https://codemismatch-contact-form.pankajdoharey.workers.dev';
+const FIRST_REPLY_CALL_INVITE = 'This may be easier to work through on a call. Would you like us to follow up? If so, share your email. If not, we can keep going here.';
+
 /* --- STATE --- */
 let state = {
     currentPage: 'home',
     currentTheme: 'void',
     brandColor: '#6600ff',
     ambientColor: '#000000',
+    callOfferActive: false,
+    callRequestSubmitted: false,
     messages: [
       {
         id: 'init',
@@ -152,6 +157,41 @@ window.handleChatSend = async function() {
     let answer = '';
     let answerBubble = null;
     try {
+        const declinedCall = /^\s*no\b/i.test(text) || /\b(?:no thanks|no thank you|not interested|not right now|not now|maybe later|rather keep chatting|keep chatting|continue here|don't want (?:a )?call|do not want (?:a )?call)\b/i.test(text);
+        if (state.callOfferActive && declinedCall) state.callOfferActive = false;
+
+        const emailMatch = text.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i);
+        if (state.callOfferActive && emailMatch && !declinedCall && !state.callRequestSubmitted) {
+            status.textContent = 'Sending your follow-up request…';
+            const email = emailMatch[0].toLowerCase();
+            const transcript = state.messages
+                .map(message => `${message.role === 'model' ? 'Architect' : 'Visitor'}: ${message.text}`)
+                .join('\n\n')
+                .slice(-4200);
+            const response = await fetch(`${CHAT_WORKER_URL}/contact`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: 'Architect chat follow-up',
+                    email,
+                    message: `The visitor agreed to a follow-up call. Please contact them to arrange a time.\nEmail: ${email}\n\nChat transcript:\n${transcript}`
+                })
+            });
+            const result = await response.json().catch(() => ({}));
+            if (!response.ok) {
+                const error = new Error(result.error || 'Unable to send the call follow-up request');
+                error.callRequest = true;
+                throw error;
+            }
+            state.callOfferActive = false;
+            state.callRequestSubmitted = true;
+            const confirmation = 'Thanks. I’ve shared your email and this conversation with our team so they can follow up to arrange a call.';
+            state.messages.push({ id: Date.now()+1, role: 'model', text: confirmation });
+            appendMessage('model', confirmation);
+            return;
+        }
+
+        const isFirstReply = state.messages.filter(message => message.role === 'model').length === 1;
         const history = state.messages.map(m => ({ role: m.role, text: m.text }));
         await generateOracleResponse(history, text, {
             onConnected: () => {
@@ -171,12 +211,18 @@ window.handleChatSend = async function() {
             }
         });
         if (!answer.trim()) answer = 'The Architect could not formulate a response. Please try again.';
+        if (isFirstReply && !state.callRequestSubmitted) {
+            answer += `\n\n${FIRST_REPLY_CALL_INVITE}`;
+            state.callOfferActive = true;
+        }
         if (!answerBubble) answerBubble = appendMessage('model', answer);
         else answerBubble.textContent = answer;
         state.messages.push({ id: Date.now()+1, role: 'model', text: answer });
     } catch (err) {
         console.error(err);
-        const message = "The Architect is temporarily unavailable. Please try again.";
+        const message = err.callRequest
+            ? "I couldn't send the follow-up request just now. We can keep chatting here; please try sharing your email again in a moment."
+            : "The Architect is temporarily unavailable. Please try again.";
         if (answerBubble) answerBubble.textContent = message;
         else appendMessage('model', message);
     } finally {
@@ -195,7 +241,7 @@ async function generateOracleResponse(history, newMessage, callbacks) {
     }));
   messages.push({ role: 'user', content: newMessage });
 
-  const response = await fetch('https://codemismatch-contact-form.pankajdoharey.workers.dev/chat', {
+  const response = await fetch(`${CHAT_WORKER_URL}/chat`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ messages })
