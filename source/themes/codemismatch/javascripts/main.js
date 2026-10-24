@@ -146,7 +146,7 @@ window.handleChatSend = async function() {
     const loading = document.getElementById('chat-loading');
     const status = document.getElementById('chat-status');
     loading.classList.remove('hidden');
-    status.textContent = 'CONNECTING_TO_FREE_GLM...';
+    status.textContent = 'Waiting for the Architect…';
     scrollToBottom();
     
     let answer = '';
@@ -155,17 +155,18 @@ window.handleChatSend = async function() {
         const history = state.messages.map(m => ({ role: m.role, text: m.text }));
         await generateOracleResponse(history, text, {
             onConnected: () => {
-                status.textContent = 'WAITING_FOR_FREE_GLM...';
+                status.textContent = 'Waiting for the Architect…';
             },
             onProgress: progress => {
-                if (progress === 'model_ready') status.textContent = 'FREE_GLM_CONNECTED. WAITING_FOR_TEXT...';
-                else if (progress === 'thinking' && !answer) status.textContent = 'ARCHITECT_IS_THINKING...';
+                if ((progress === 'model_ready' || progress === 'thinking') && !answer) {
+                    status.textContent = 'Waiting for the Architect…';
+                }
             },
             onToken: token => {
                 if (!answerBubble) answerBubble = appendMessage('model', '');
                 answer += token;
                 answerBubble.textContent = answer;
-                status.textContent = 'ARCHITECT_IS_RESPONDING...';
+                status.textContent = 'The Architect is responding…';
                 scrollToBottom();
             }
         });
