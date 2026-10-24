@@ -10,11 +10,12 @@ let state = {
     ambientColor: '#000000',
     callOfferActive: false,
     callRequestSubmitted: false,
+    emailNudgeSent: false,
     messages: [
       {
         id: 'init',
         role: 'model',
-        text: "I am The Architect. I serve as the cognitive interface for CodeMismatch. How may I assist with your enterprise strategy?"
+        text: "I help accounting firms find practical ways to use AI and automation across document intake, bookkeeping, reconciliations and month-end close. What part of your firm's work would you most like to improve?"
       }
     ]
 };
@@ -37,32 +38,32 @@ const THEMES = {
     },
     azure: {
         variables: {
-            '--bg-base': '#f0f9ff',
+            '--bg-base': '#f8fbff',
             '--bg-surface': '#ffffff',
-            '--bg-surface-hover': '#e0f2fe',
-            '--text-main': '#0f172a',
-            '--text-muted': '#64748b',
-            '--border-color': '#e2e8f0',
+            '--bg-surface-hover': '#eff6ff',
+            '--text-main': '#142238',
+            '--text-muted': '#52637a',
+            '--border-color': '#dbe5f1',
             '--slider-bg': '#e2e8f0' // Visible gray for Azure (Light)
         },
-        gradientClass: 'bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-brand-100/50 via-ambient-100 via-ambient-200 to-brand-200/60',
+        gradientClass: 'bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-brand-100/25 via-transparent to-transparent',
         isDark: false,
         brand: '#3b82f6', // Azure Default
-        ambient: '#f0f9ff'
+        ambient: '#f8fbff'
     },
     paper: {
         variables: {
             '--bg-base': '#ffffff',
-            '--bg-surface': '#f8fafc',
-            '--bg-surface-hover': '#f1f5f9',
-            '--text-main': '#1e293b',
-            '--text-muted': '#64748b',
-            '--border-color': '#e2e8f0',
+            '--bg-surface': '#ffffff',
+            '--bg-surface-hover': '#f5f7fa',
+            '--text-main': '#172033',
+            '--text-muted': '#566273',
+            '--border-color': '#e1e6ec',
             '--slider-bg': 'rgb(var(--skin-base))' // Default skin base for Paper (Light)
         },
-        gradientClass: 'bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-ambient-100 via-brand-100/50 via-ambient-200 to-brand-200/60',
+        gradientClass: 'bg-none',
         isDark: false,
-        brand: '#c800ff', // Paper Default
+        brand: '#155e75', // Paper Default
         ambient: '#ffffff'
     }
 };
@@ -328,7 +329,9 @@ window.handleChatSend = async function() {
             return;
         }
 
-        const isFirstReply = state.messages.filter(message => message.role === 'model').length === 1;
+        const assistantReplyCount = state.messages.filter(message => message.role === 'model').length;
+        const isFirstReply = assistantReplyCount === 1;
+        const isSecondReply = assistantReplyCount === 2;
         const history = state.messages.map(m => ({ role: m.role, text: m.text }));
         await generateOracleResponse(history, text, {
             onConnected: () => {
@@ -351,6 +354,11 @@ window.handleChatSend = async function() {
         if (isFirstReply && !state.callRequestSubmitted) {
             answer += `\n\n${FIRST_REPLY_CALL_INVITE}`;
             state.callOfferActive = true;
+        } else if (isSecondReply && state.callOfferActive && !state.emailNudgeSent) {
+            if (!/\bemail\b/i.test(answer)) {
+                answer += '\n\nIf you would like us to follow up, share your work email. Otherwise, we can keep working through the workflow here.';
+            }
+            state.emailNudgeSent = true;
         }
         if (!answerBubble) answerBubble = appendMessage('model', answer);
         else answerBubble.innerHTML = renderMarkdown(answer);
@@ -506,6 +514,7 @@ window.setTheme = function(themeKey) {
     // Set Body Gradient Class
     const body = document.getElementById('app-body');
     body.className = `min-h-screen transition-colors duration-500 selection:bg-brand-500 selection:text-white ${theme.gradientClass}`;
+    body.dataset.theme = themeKey;
     
     // Update State & Color Pickers
     state.brandColor = theme.brand;
@@ -606,7 +615,7 @@ function generatePalette(baseHex, prefix) {
     
     palette[`--${prefix}-600`] = `${base.r} ${base.g} ${base.b}`;
     
-    [0.1, 0.3, 0.5, 0.7].forEach((w, i) => {
+    [0.7, 0.5, 0.3, 0.1].forEach((w, i) => {
         const levels = [700, 800, 900, 950];
         palette[`--${prefix}-${levels[i]}`] = mixWithBase(black, w);
     });
