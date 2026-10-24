@@ -1,0 +1,10 @@
+name = "codemismatch-contact-form"
+main = "src/index.js"
+compatibility_date = "2026-10-24"
+workers_dev = true
+
+[ai]
+binding = "AI"
+
+[[send_email]]
+name = "EMAIL"

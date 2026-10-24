@@ -16,6 +16,10 @@ echo "📦 Building site..."
 rm -rf "$BUILD_DIR"
 bundle exec middleman build
 
+# 1.5 Deploy the Cloudflare Worker from the repository source
+echo "☁️ Deploying CodeMismatch contact Worker..."
+npx --yes wrangler@4 deploy --config workers/codemismatch-contact-form/wrangler.toml
+
 # 2. Prepare Worktree
 echo "🌳 Preparing git worktree..."
 rm -rf "$WORKTREE_DIR"
