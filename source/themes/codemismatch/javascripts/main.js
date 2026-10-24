@@ -155,11 +155,11 @@ window.handleChatSend = async function() {
         const history = state.messages.map(m => ({ role: m.role, text: m.text }));
         await generateOracleResponse(history, text, {
             onConnected: () => {
-                status.textContent = 'CONNECTED. WAITING_FOR_FIRST_TOKEN...';
-                answerBubble = appendMessage('model', '');
+                status.textContent = 'WAITING_FOR_FREE_GLM...';
             },
-            onProgress: () => {
-                if (!answer) status.textContent = 'ARCHITECT_IS_THINKING...';
+            onProgress: progress => {
+                if (progress === 'model_ready') status.textContent = 'FREE_GLM_CONNECTED. WAITING_FOR_TEXT...';
+                else if (progress === 'thinking' && !answer) status.textContent = 'ARCHITECT_IS_THINKING...';
             },
             onToken: token => {
                 if (!answerBubble) answerBubble = appendMessage('model', '');
@@ -220,8 +220,13 @@ async function generateOracleResponse(history, newMessage, callbacks) {
         if (!payload || payload === '[DONE]') continue;
         let chunk;
         try { chunk = JSON.parse(payload); } catch { continue; }
+        if (chunk.error) throw new Error(chunk.error);
+        if (chunk.progress) {
+          callbacks.onProgress(chunk.progress);
+          continue;
+        }
         const content = chunk.choices?.[0]?.delta?.content;
-        if (chunk.choices?.[0]?.delta?.reasoning_content) callbacks.onProgress();
+        if (chunk.choices?.[0]?.delta?.reasoning_content) callbacks.onProgress('thinking');
         if (typeof content === 'string' && content) callbacks.onToken(content);
         else if (Array.isArray(content)) {
           for (const item of content) if (typeof item.text === 'string') callbacks.onToken(item.text);

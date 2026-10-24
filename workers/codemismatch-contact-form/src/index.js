@@ -49,41 +49,78 @@ export default {
       if (messages.some((item) => item.role === "invalid" || !item.content.trim()) || messages[messages.length - 1].role !== "user") {
         return jsonResponse({ error: "Invalid messages" }, 400, origin);
       }
-      try {
-        if (!env.ZAI_API_KEY) {
-          return jsonResponse({ error: "The Architect's free GLM model is not configured yet." }, 503, origin);
-        }
-        for (const model of ["glm-4.7-flash", "glm-4.5-flash"]) {
-          const response = await fetch("https://api.z.ai/api/paas/v4/chat/completions", {
-            method: "POST",
-            headers: {
-              "Authorization": `Bearer ${env.ZAI_API_KEY}`,
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              model,
-              messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages],
-              max_tokens: 800,
-              ...(model === "glm-4.7-flash" ? { thinking: { type: "disabled" } } : {}),
-              stream: true
-            })
-          });
-          if (!response.ok) {
-            const failure = await response.json().catch(() => ({}));
-            const providerCode = String(failure.error?.code || failure.code || "unknown").slice(0, 40);
-            console.error("Z.ai chat request failed", model, response.status, providerCode);
-            if (model === "glm-4.7-flash" && ["1302", "1305"].includes(providerCode)) continue;
-            return jsonResponse({ error: "The free GLM models are temporarily unavailable." }, 503, origin);
-          }
-          if (!response.body) return jsonResponse({ error: "The model did not provide a response stream." }, 502, origin);
-          console.log("Z.ai chat stream started", model);
-          return eventStreamResponse(response.body, origin);
-        }
-        return jsonResponse({ error: "The free GLM models are temporarily unavailable." }, 503, origin);
-      } catch (error) {
-        console.error("Z.ai chat request failed", error);
-        return jsonResponse({ error: "The Architect is temporarily unavailable." }, 503, origin);
+      if (!env.ZAI_API_KEY) {
+        return jsonResponse({ error: "The Architect's free GLM model is not configured yet." }, 503, origin);
       }
+
+      const encoder = new TextEncoder();
+      const abortController = new AbortController();
+      let cancelled = false;
+      const stream = new ReadableStream({
+        start(controller) {
+          const sendEvent = (data) => controller.enqueue(encoder.encode(`data: ${JSON.stringify(data)}\n\n`));
+          sendEvent({ progress: "waiting_for_model" });
+          const pump = async () => {
+            try {
+              for (const model of ["glm-4.7-flash", "glm-4.5-flash"]) {
+                const response = await fetch("https://api.z.ai/api/paas/v4/chat/completions", {
+                  method: "POST",
+                  headers: {
+                    "Authorization": `Bearer ${env.ZAI_API_KEY}`,
+                    "Content-Type": "application/json"
+                  },
+                  body: JSON.stringify({
+                    model,
+                    messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages],
+                    max_tokens: 800,
+                    ...(model === "glm-4.7-flash" ? { thinking: { type: "disabled" } } : {}),
+                    stream: true
+                  }),
+                  signal: abortController.signal
+                });
+                if (!response.ok) {
+                  const failure = await response.json().catch(() => ({}));
+                  const providerCode = String(failure.error?.code || failure.code || "unknown").slice(0, 40);
+                  console.error("Z.ai chat request failed", model, response.status, providerCode);
+                  if (model === "glm-4.7-flash" && ["1302", "1305"].includes(providerCode)) continue;
+                  sendEvent({ error: "The free GLM models are temporarily unavailable." });
+                  controller.close();
+                  return;
+                }
+                if (!response.body) {
+                  sendEvent({ error: "The model did not provide a response stream." });
+                  controller.close();
+                  return;
+                }
+                console.log("Z.ai chat stream started", model);
+                sendEvent({ progress: "model_ready", model });
+                const reader = response.body.getReader();
+                while (true) {
+                  const { value, done } = await reader.read();
+                  if (done || cancelled) break;
+                  controller.enqueue(value);
+                }
+                if (!cancelled) controller.close();
+                return;
+              }
+              sendEvent({ error: "The free GLM models are temporarily unavailable." });
+              controller.close();
+            } catch (error) {
+              if (!cancelled) {
+                console.error("Z.ai chat request failed", error);
+                sendEvent({ error: "The Architect is temporarily unavailable." });
+                controller.close();
+              }
+            }
+          };
+          pump();
+        },
+        cancel() {
+          cancelled = true;
+          abortController.abort();
+        }
+      });
+      return eventStreamResponse(stream, origin);
     }
 
     if (path !== "/" && path !== "/contact") return jsonResponse({ error: "Not found" }, 404, origin);
